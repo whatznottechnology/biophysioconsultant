@@ -1,0 +1,507 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Bookings - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 mb-2">My Appointments</h1>
+                    <p class="text-gray-600">Manage your healthcare appointments</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <a href="{% url 'book_appointment' %}" 
+                       class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-200">
+                        <i class="fas fa-plus mr-2"></i>Book New Appointment
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="flex space-x-8 px-6" aria-label="Tabs">
+                    <button data-filter="all" class="filter-tab py-4 px-1 border-b-2 border-green-500 font-medium text-sm text-green-600">
+                        All Appointments
+                    </button>
+                    <button data-filter="upcoming" class="filter-tab py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Upcoming
+                    </button>
+                    <button data-filter="completed" class="filter-tab py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Completed
+                    </button>
+                    <button data-filter="cancelled" class="filter-tab py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Cancelled
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                    <label for="search" class="sr-only">Search bookings</label>
+                    <input type="text" id="search" placeholder="Search by booking ID, service, or patient name..." 
+                           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <select id="sort-by" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                        <option value="date-desc">Latest First</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="service">By Service</option>
+                        <option value="status">By Status</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings List -->
+        <div id="bookings-container">
+            {% if bookings %}
+                {% for booking in bookings %}
+                <div class="booking-card bg-white rounded-lg shadow-md p-6 mb-4" 
+                     data-status="{{ booking.status }}" 
+                     data-booking-id="{{ booking.booking_id }}"
+                     data-service="{{ booking.service.name }}"
+                     data-patient="{{ booking.patient_name }}"
+                     data-date="{{ booking.appointment_date|date:'Y-m-d' }}">
+                    
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                        <!-- Booking Info -->
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">{{ booking.service.name }}</h3>
+                                    <p class="text-sm text-gray-600">Booking ID: #{{ booking.booking_id }}</p>
+                                </div>
+                                <div class="ml-4">
+                                    {% if booking.status == 'confirmed' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check mr-1"></i>Confirmed
+                                        </span>
+                                    {% elif booking.status == 'pending' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            <i class="fas fa-clock mr-1"></i>Pending
+                                        </span>
+                                    {% elif booking.status == 'completed' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <i class="fas fa-check-double mr-1"></i>Completed
+                                        </span>
+                                    {% elif booking.status == 'cancelled' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-times mr-1"></i>Cancelled
+                                        </span>
+                                    {% elif booking.status == 'no_show' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            <i class="fas fa-user-times mr-1"></i>No Show
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                                <div>
+                                    <p class="text-gray-500">Date & Time</p>
+                                    <p class="font-medium text-gray-900">
+                                        {{ booking.appointment_date|date:"M d, Y" }}<br>
+                                        {{ booking.time_slot.start_time|time:"g:i A" }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Patient</p>
+                                    <p class="font-medium text-gray-900">{{ booking.patient_name }}</p>
+                                    <p class="text-gray-600">{{ booking.patient_phone }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Amount</p>
+                                    <p class="font-medium text-gray-900">₹{{ booking.total_amount }}</p>
+                                    {% if booking.payment_status == 'completed' %}
+                                        <p class="text-green-600 text-xs">
+                                            <i class="fas fa-check mr-1"></i>Paid
+                                        </p>
+                                    {% else %}
+                                        <p class="text-yellow-600 text-xs">
+                                            <i class="fas fa-clock mr-1"></i>Pay at clinic
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="mt-4 lg:mt-0 lg:ml-6 flex flex-col sm:flex-row lg:flex-col gap-2">
+                            {% if booking.status == 'confirmed' or booking.status == 'pending' %}
+                                {% if booking.can_cancel %}
+                                <button onclick="showCancelModal('{{ booking.id }}', '{{ booking.booking_id }}')" 
+                                        class="text-red-600 hover:text-red-700 text-sm font-medium">
+                                    <i class="fas fa-times mr-1"></i>Cancel
+                                </button>
+                                {% endif %}
+                                
+                                {% if booking.can_reschedule %}
+                                <a href="{% url 'bookings:reschedule_booking' booking.id %}" 
+                                   class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                                    <i class="fas fa-calendar-alt mr-1"></i>Reschedule
+                                </a>
+                                {% endif %}
+                            {% endif %}
+                            
+                            <a href="{% url 'booking_detail' booking.id %}" 
+                               class="text-green-600 hover:text-green-700 text-sm font-medium">
+                                <i class="fas fa-eye mr-1"></i>View Details
+                            </a>
+                            
+                            {% if booking.status == 'completed' %}
+                            <button onclick="showReviewModal('{{ booking.id }}')" 
+                                    class="text-yellow-600 hover:text-yellow-700 text-sm font-medium">
+                                <i class="fas fa-star mr-1"></i>Leave Review
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Info -->
+                    {% if booking.symptoms %}
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <p class="text-sm text-gray-500">Symptoms/Complaint:</p>
+                        <p class="text-sm text-gray-700 mt-1">{{ booking.symptoms }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Empty State -->
+                <div class="bg-white rounded-lg shadow-md p-12 text-center">
+                    <i class="fas fa-calendar-alt text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-medium text-gray-900 mb-2">No appointments found</h3>
+                    <p class="text-gray-600 mb-6">You haven't booked any appointments yet.</p>
+                    <a href="{% url 'book_appointment' %}" 
+                       class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-200">
+                        <i class="fas fa-plus mr-2"></i>Book Your First Appointment
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Load More Button (for pagination) -->
+        {% if bookings.has_next %}
+        <div class="text-center mt-6">
+            <button id="load-more" data-page="{{ bookings.next_page_number }}" 
+                    class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition duration-200">
+                <i class="fas fa-plus mr-2"></i>Load More
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Cancel Booking Modal -->
+<div id="cancel-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Cancel Appointment</h3>
+        <p class="text-gray-600 mb-4">Are you sure you want to cancel this appointment?</p>
+        <p class="text-sm text-yellow-600 mb-6">
+            <i class="fas fa-exclamation-triangle mr-1"></i>
+            Please note our cancellation policy requires 24 hours advance notice.
+        </p>
+        
+        <div class="flex gap-4">
+            <button id="confirm-cancel" class="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition duration-200">
+                Yes, Cancel
+            </button>
+            <button onclick="hideCancelModal()" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition duration-200">
+                No, Keep
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div id="review-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Leave a Review</h3>
+        
+        <form id="review-form">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                <div class="flex space-x-1" id="star-rating">
+                    <button type="button" class="star text-2xl text-gray-300 hover:text-yellow-400" data-rating="1">★</button>
+                    <button type="button" class="star text-2xl text-gray-300 hover:text-yellow-400" data-rating="2">★</button>
+                    <button type="button" class="star text-2xl text-gray-300 hover:text-yellow-400" data-rating="3">★</button>
+                    <button type="button" class="star text-2xl text-gray-300 hover:text-yellow-400" data-rating="4">★</button>
+                    <button type="button" class="star text-2xl text-gray-300 hover:text-yellow-400" data-rating="5">★</button>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Review</label>
+                <textarea id="review-text" rows="4" 
+                          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-green-500 focus:border-green-500"
+                          placeholder="Share your experience..."></textarea>
+            </div>
+            
+            <div class="flex gap-4">
+                <button type="submit" class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition duration-200">
+                    Submit Review
+                </button>
+                <button type="button" onclick="hideReviewModal()" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition duration-200">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter functionality
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    const bookingCards = document.querySelectorAll('.booking-card');
+    
+    filterTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Update active tab
+            filterTabs.forEach(t => {
+                t.classList.remove('border-green-500', 'text-green-600');
+                t.classList.add('border-transparent', 'text-gray-500');
+            });
+            this.classList.add('border-green-500', 'text-green-600');
+            this.classList.remove('border-transparent', 'text-gray-500');
+            
+            // Filter bookings
+            const filter = this.dataset.filter;
+            filterBookings(filter);
+        });
+    });
+    
+    // Search functionality
+    const searchInput = document.getElementById('search');
+    searchInput.addEventListener('input', function() {
+        filterBookings();
+    });
+    
+    // Sort functionality
+    const sortSelect = document.getElementById('sort-by');
+    sortSelect.addEventListener('change', function() {
+        sortBookings(this.value);
+    });
+    
+    function filterBookings(statusFilter = null) {
+        const searchTerm = searchInput.value.toLowerCase();
+        const activeFilter = statusFilter || document.querySelector('.filter-tab.border-green-500').dataset.filter;
+        
+        bookingCards.forEach(card => {
+            const status = card.dataset.status;
+            const bookingId = card.dataset.bookingId.toLowerCase();
+            const service = card.dataset.service.toLowerCase();
+            const patient = card.dataset.patient.toLowerCase();
+            
+            // Status filter
+            let statusMatch = true;
+            if (activeFilter !== 'all') {
+                if (activeFilter === 'upcoming') {
+                    statusMatch = status === 'confirmed' || status === 'pending';
+                } else {
+                    statusMatch = status === activeFilter;
+                }
+            }
+            
+            // Search filter
+            const searchMatch = searchTerm === '' || 
+                               bookingId.includes(searchTerm) ||
+                               service.includes(searchTerm) ||
+                               patient.includes(searchTerm);
+            
+            if (statusMatch && searchMatch) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    
+    function sortBookings(sortBy) {
+        const container = document.getElementById('bookings-container');
+        const cards = Array.from(bookingCards);
+        
+        cards.sort((a, b) => {
+            switch (sortBy) {
+                case 'date-desc':
+                    return new Date(b.dataset.date) - new Date(a.dataset.date);
+                case 'date-asc':
+                    return new Date(a.dataset.date) - new Date(b.dataset.date);
+                case 'service':
+                    return a.dataset.service.localeCompare(b.dataset.service);
+                case 'status':
+                    return a.dataset.status.localeCompare(b.dataset.status);
+                default:
+                    return 0;
+            }
+        });
+        
+        cards.forEach(card => container.appendChild(card));
+    }
+});
+
+// Cancel booking functionality
+let bookingToCancel = null;
+
+function showCancelModal(bookingId, bookingRef) {
+    bookingToCancel = bookingId;
+    document.getElementById('cancel-modal').classList.remove('hidden');
+    document.getElementById('cancel-modal').classList.add('flex');
+}
+
+function hideCancelModal() {
+    document.getElementById('cancel-modal').classList.add('hidden');
+    document.getElementById('cancel-modal').classList.remove('flex');
+    bookingToCancel = null;
+}
+
+document.getElementById('confirm-cancel').addEventListener('click', function() {
+    if (bookingToCancel) {
+        fetch(`/api/bookings/${bookingToCancel}/cancel/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.error || 'Failed to cancel booking');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error cancelling booking');
+        });
+        
+        hideCancelModal();
+    }
+});
+
+// Review functionality
+let bookingToReview = null;
+let selectedRating = 0;
+
+function showReviewModal(bookingId) {
+    bookingToReview = bookingId;
+    selectedRating = 0;
+    document.getElementById('review-modal').classList.remove('hidden');
+    document.getElementById('review-modal').classList.add('flex');
+    
+    // Reset stars
+    document.querySelectorAll('.star').forEach(star => {
+        star.classList.remove('text-yellow-400');
+        star.classList.add('text-gray-300');
+    });
+    
+    document.getElementById('review-text').value = '';
+}
+
+function hideReviewModal() {
+    document.getElementById('review-modal').classList.add('hidden');
+    document.getElementById('review-modal').classList.remove('flex');
+    bookingToReview = null;
+}
+
+// Star rating
+document.querySelectorAll('.star').forEach(star => {
+    star.addEventListener('click', function() {
+        selectedRating = parseInt(this.dataset.rating);
+        
+        document.querySelectorAll('.star').forEach((s, index) => {
+            if (index < selectedRating) {
+                s.classList.add('text-yellow-400');
+                s.classList.remove('text-gray-300');
+            } else {
+                s.classList.remove('text-yellow-400');
+                s.classList.add('text-gray-300');
+            }
+        });
+    });
+});
+
+// Submit review
+document.getElementById('review-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (selectedRating === 0) {
+        alert('Please select a rating');
+        return;
+    }
+    
+    const reviewText = document.getElementById('review-text').value;
+    
+    fetch(`/api/bookings/${bookingToReview}/review/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            rating: selectedRating,
+            review: reviewText
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            hideReviewModal();
+            alert('Review submitted successfully!');
+        } else {
+            alert(data.error || 'Failed to submit review');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error submitting review');
+    });
+});
+
+// Load more functionality
+const loadMoreBtn = document.getElementById('load-more');
+if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', function() {
+        const page = this.dataset.page;
+        
+        fetch(`?page=${page}`)
+        .then(response => response.text())
+        .then(html => {
+            // Parse the response and append new bookings
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newBookings = doc.querySelectorAll('.booking-card');
+            
+            const container = document.getElementById('bookings-container');
+            newBookings.forEach(booking => {
+                container.appendChild(booking);
+            });
+            
+            // Update load more button
+            const nextPage = parseInt(page) + 1;
+            const hasNext = doc.querySelector('#load-more');
+            if (hasNext) {
+                this.dataset.page = nextPage;
+            } else {
+                this.remove();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading more bookings:', error);
+        });
+    });
+}
+</script>
+{% endblock %}

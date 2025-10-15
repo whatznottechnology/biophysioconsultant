@@ -1,0 +1,473 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Career Opportunities - Bio-Physio Consultant{% endblock %}
+
+{% block content %}
+
+<!-- Career Hero Section -->
+<section class="bg-gradient-to-br from-blue-50 to-green-50 py-16">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Join Our Healthcare Team</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            Build your career in healthcare with opportunities for growth, learning, and making a difference in people's
+            lives
+        </p>
+        <div class="flex items-center justify-center space-x-2 text-green-600">
+            <i class="fas fa-briefcase"></i>
+            <span class="font-semibold">{{ job_openings.count }} Active Job{{ job_openings.count|pluralize }}
+                Available</span>
+        </div>
+    </div>
+</section>
+
+<!-- Job Cards Section -->
+<section class="py-16 bg-white" id="job-openings">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Physiotherapy Practical Training Opportunity</h2>
+            <p class="text-xl text-gray-600">Join our training program to enhance your skills</p>
+        </div>
+
+        {% if job_openings %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            {% for job in job_openings %}
+            <div class="bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+                onclick="openJobModal({{ job.id }})">
+
+                <!-- Job Card Header -->
+                <div class="bg-gradient-to-r from-green-500 to-blue-500 text-white p-6 rounded-t-xl">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl font-bold leading-tight">{{ job.title }}</h3>
+                        <span
+                            class="bg-white bg-opacity-20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium">
+                            {{ job.get_job_type_display }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center text-sm opacity-90">
+                        <i class="fas fa-map-marker-alt mr-2"></i>
+                        <span>{{ job.location }}</span>
+                    </div>
+                </div>
+
+                <!-- Job Card Body -->
+                <div class="p-6">
+                    <div class="mb-4">
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            {{ job.description|truncatewords:20 }}
+                        </p>
+                    </div>
+
+                    <div class="space-y-3 mb-6">
+                        {% if job.salary_min and job.salary_max %}
+                        <div class="flex items-center text-sm text-gray-700">
+                            <i class="fas fa-rupee-sign text-green-500 w-4 mr-3"></i>
+                            <span>₹{{ job.salary_min|floatformat:0 }} - ₹{{ job.salary_max|floatformat:0 }}</span>
+                        </div>
+                        {% endif %}
+
+                        <div class="flex items-center text-sm text-gray-700">
+                            <i class="fas fa-calendar text-green-500 w-4 mr-3"></i>
+                            <span>Posted {{ job.created_at|timesince }} ago</span>
+                        </div>
+                    </div>
+
+                    <!-- Apply Button -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-1 text-xs text-gray-500">
+                            <i class="fas fa-users"></i>
+                            <span>{{ job.applications.count }} applicant{{ job.applications.count|pluralize }}</span>
+                        </div>
+
+                        <button
+                            class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition-colors flex items-center space-x-2">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Apply Now</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- No Jobs Available -->
+        <div class="text-center py-16">
+            <i class="fas fa-briefcase text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-2xl font-medium text-gray-900 mb-2">No Openings Currently</h3>
+            <p class="text-gray-600 mb-6">We don't have any job openings at the moment, but we're always looking for
+                talented individuals.</p>
+            <a href="{% url 'contact:contact' %}"
+                class="inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                Contact Us
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Job Application Modal -->
+<div id="jobModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-green-500 to-blue-500 text-white p-6 rounded-t-xl">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-2xl font-bold" id="modalJobTitle">Job Title</h3>
+                    <p class="text-sm opacity-90" id="modalJobLocation">Location</p>
+                </div>
+                <button onclick="closeJobModal()" class="text-white hover:text-gray-200 transition-colors">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6">
+            <!-- Job Details -->
+            <div class="mb-8">
+                <h4 class="font-semibold text-gray-900 mb-2">Job Description:</h4>
+                <p class="text-gray-700 mb-4" id="modalJobDescription">Job description will appear here</p>
+
+                <h4 class="font-semibold text-gray-900 mb-2">Requirements:</h4>
+                <div class="text-gray-700 whitespace-pre-line" id="modalJobRequirements">Requirements will appear here
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 mt-4 p-4 bg-gray-50 rounded-lg">
+                    <div class="text-sm">
+                        <span class="text-gray-600">Job Type:</span>
+                        <span class="font-medium text-gray-900" id="modalJobType">-</span>
+                    </div>
+                    <div class="text-sm" id="modalSalaryDiv" style="display: none;">
+                        <span class="text-gray-600">Salary:</span>
+                        <span class="font-medium text-gray-900" id="modalJobSalary">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Application Form -->
+            <div class="border-t pt-6">
+                <h4 class="text-xl font-semibold text-gray-900 mb-6">Apply for this Position</h4>
+
+                <form id="jobApplicationForm" class="space-y-4">
+                    {% csrf_token %}
+                    <input type="hidden" id="jobId" name="job_id" value="">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Name -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Full Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="name" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                                placeholder="Enter your full name">
+                        </div>
+
+                        <!-- Date of Birth -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Date of Birth <span class="text-red-500">*</span>
+                            </label>
+                            <input type="date" name="date_of_birth" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Sex -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Sex <span class="text-red-500">*</span>
+                            </label>
+                            <select name="sex" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors">
+                                <option value="">Select</option>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="O">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- WhatsApp Number -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                WhatsApp No. <span class="text-red-500">*</span>
+                            </label>
+                            <input type="tel" name="whatsapp_number" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                                placeholder="+91 9876543210" pattern="[0-9+]{10,15}">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Email <span class="text-red-500">*</span>
+                            </label>
+                            <input type="email" name="email" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                                placeholder="your@email.com">
+                        </div>
+
+                        <!-- Qualification -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Qualification <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="qualification" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                                placeholder="Your highest qualification">
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Address <span class="text-red-500">*</span>
+                        </label>
+                        <textarea name="address" required rows="3"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                            placeholder="Enter your complete address"></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end pt-4">
+                        <button type="submit"
+                            class="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            id="submitBtn">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Submit Application</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Message Modal -->
+<div id="successModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-md w-full p-6 text-center">
+        <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-check text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Application Submitted!</h3>
+        <p class="text-gray-600 mb-6">Thank you for your interest. We will review your application and contact you soon.
+        </p>
+        <button onclick="closeSuccessModal()"
+            class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+            Close
+        </button>
+    </div>
+</div>
+
+<!-- Why Work With Us -->
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Why Choose Us?</h2>
+            <p class="text-xl text-gray-600">Benefits of joining our healthcare team</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="text-center">
+                <div
+                    class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-heart text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Meaningful Work</h3>
+                <p class="text-gray-600">Make a real difference in people's health and well-being</p>
+            </div>
+
+            <div class="text-center">
+                <div
+                    class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-chart-line text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Career Growth</h3>
+                <p class="text-gray-600">Opportunities for professional development and advancement</p>
+            </div>
+
+            <div class="text-center">
+                <div
+                    class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-users text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Great Team</h3>
+                <p class="text-gray-600">Work with passionate healthcare professionals</p>
+            </div>
+
+            <div class="text-center">
+                <div
+                    class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-balance-scale text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Work-Life Balance</h3>
+                <p class="text-gray-600">Flexible schedules and supportive work environment</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-16 bg-gray-900 text-white">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-6">Ready to Start Your Healthcare Career?</h2>
+        <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            Join our mission to provide exceptional healthcare services to our community
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#job-openings"
+                class="bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                View Job Openings
+            </a>
+            <a href="{% url 'contact:contact' %}"
+                class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-gray-900 transition-colors">
+                Contact HR
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Job data for modal
+    const jobData = {
+    {% for job in job_openings %}
+    "{{ job.id }}": {
+        title: "{{ job.title|escapejs }}",
+            location: "{{ job.location|escapejs }}",
+                description: "{{ job.description|escapejs }}",
+                    requirements: "{{ job.requirements|escapejs }}",
+                        job_type: "{{ job.get_job_type_display|escapejs }}",
+                            salary_min: {% if job.salary_min %} "{{ job.salary_min|floatformat:0 }}"{% else %} null{% endif %},
+        salary_max: {% if job.salary_max %} "{{ job.salary_max|floatformat:0 }}"{% else %} null{% endif %}
+    } {% if not forloop.last %}, {% endif %}
+    {% empty %}
+    // No jobs available
+    {% endfor %}
+};
+
+    function openJobModal(jobId) {
+        const job = jobData[String(jobId)];
+        if (!job) {
+            console.error('Job not found:', jobId);
+            return;
+        }
+
+        // Populate modal content with error handling
+        try {
+            document.getElementById('modalJobTitle').textContent = job.title || 'Job Title';
+            document.getElementById('modalJobLocation').textContent = job.location || 'Location';
+            document.getElementById('modalJobDescription').textContent = job.description || 'No description available';
+            document.getElementById('modalJobRequirements').textContent = job.requirements || 'No requirements specified';
+            document.getElementById('modalJobType').textContent = job.job_type || 'Not specified';
+            document.getElementById('jobId').value = jobId;
+
+            // Handle salary display
+            const salaryDiv = document.getElementById('modalSalaryDiv');
+            const salarySpan = document.getElementById('modalJobSalary');
+            if (job.salary_min && job.salary_max) {
+                salarySpan.textContent = `₹${job.salary_min} - ₹${job.salary_max}`;
+                salaryDiv.style.display = 'block';
+            } else {
+                salaryDiv.style.display = 'none';
+            }
+
+            // Show modal
+            document.getElementById('jobModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        } catch (error) {
+            console.error('Error opening modal:', error);
+            alert('Error opening job details. Please try again.');
+        }
+    }
+
+    function closeJobModal() {
+        document.getElementById('jobModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        // Reset form
+        document.getElementById('jobApplicationForm').reset();
+    }
+
+    function closeSuccessModal() {
+        document.getElementById('successModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Handle form submission
+    document.getElementById('jobApplicationForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const submitBtn = document.getElementById('submitBtn');
+        const formData = new FormData(this);
+
+        // Get CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        // Disable submit button
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Submitting...</span>';
+
+        // Submit form via AJAX
+        fetch('{% url "career:job_apply_ajax" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken,
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    closeJobModal();
+                    document.getElementById('successModal').classList.remove('hidden');
+                } else {
+                    alert('Error: ' + (data.message || 'Please check your form data'));
+                    if (data.errors) {
+                        console.error('Form errors:', data.errors);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting your application. Please try again.');
+            })
+            .finally(() => {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Submit Application</span>';
+            });
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('jobModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            closeJobModal();
+        }
+    });
+
+    document.getElementById('successModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            closeSuccessModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeJobModal();
+            closeSuccessModal();
+        }
+    });
+</script>
+
+{% endblock %}

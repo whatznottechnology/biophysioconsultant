@@ -1,0 +1,312 @@
+{% load static %}
+{% load blog_extras %}
+
+<!-- Main Footer -->
+<div class="bg-gray-900 text-white">
+    <div class="container mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            <!-- About & Practitioner Info -->
+            <div class="lg:col-span-2">
+                <div class="flex items-center mb-6">
+                    {% if site_settings.site_logo %}
+                    <img src="{{ site_settings.site_logo.url }}" alt="{{ site_settings.site_name }}" class="h-12 w-12 mr-4">
+                    {% else %}
+                    <div class="h-12 w-12 bg-primary text-white rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-heartbeat text-xl"></i>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <h3 class="text-xl font-bold text-white">{{ site_settings.site_name|default:"Bio-Physio Consultant" }}</h3>
+                        <p class="text-primary text-sm">{{ site_settings.site_tagline|default:"Holistic Health & Physiotherapy" }}</p>
+                    </div>
+                </div>
+                
+                <p class="text-gray-300 mb-6 leading-relaxed">
+                    Professional healthcare services including physiotherapy, acupressure, massage therapy, and alternative medicine. 
+                    We provide comprehensive treatment for various health conditions with a holistic approach to wellness.
+                </p>
+                
+                <!-- Specializations -->
+                <div class="mb-6">
+                    <h4 class="font-semibold text-white mb-3">
+                        <i class="fas fa-stethoscope text-primary mr-2"></i>
+                        Specializations
+                    </h4>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="flex items-center text-sm text-gray-300">
+                            <i class="fas fa-check text-primary mr-2 text-xs"></i>Acupressure
+                        </div>
+                        <div class="flex items-center text-sm text-gray-300">
+                            <i class="fas fa-check text-primary mr-2 text-xs"></i>Magnet Therapy
+                        </div>
+                        <div class="flex items-center text-sm text-gray-300">
+                            <i class="fas fa-check text-primary mr-2 text-xs"></i>Massage Therapy
+                        </div>
+                        <div class="flex items-center text-sm text-gray-300">
+                            <i class="fas fa-check text-primary mr-2 text-xs"></i>Cupping Therapy
+                        </div>
+                        <div class="flex items-center text-sm text-gray-300">
+                            <i class="fas fa-check text-primary mr-2 text-xs"></i>Physiotherapy
+                        </div>
+                        <div class="flex items-center text-sm text-gray-300">
+                            <i class="fas fa-check text-primary mr-2 text-xs"></i>Biochemic System of Medicine
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4 text-white">
+                    <i class="fas fa-link text-primary mr-2"></i>
+                    Quick Links
+                </h3>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="{% url 'home' %}" class="text-gray-300 hover:text-primary transition-colors flex items-center">
+                            <i class="fas fa-home mr-3 text-sm w-4"></i>Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'about' %}" class="text-gray-300 hover:text-primary transition-colors flex items-center">
+                            <i class="fas fa-info-circle mr-3 text-sm w-4"></i>About Us
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'services' %}" class="text-gray-300 hover:text-primary transition-colors flex items-center">
+                            <i class="fas fa-stethoscope mr-3 text-sm w-4"></i>Our Services
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'blog:blog_list' %}" class="text-gray-300 hover:text-primary transition-colors flex items-center">
+                            <i class="fas fa-video mr-3 text-sm w-4"></i>Health Videos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'book_appointment' %}" class="text-gray-300 hover:text-primary transition-colors flex items-center">
+                            <i class="fas fa-calendar-plus mr-3 text-sm w-4"></i>Book Appointment
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li>
+                        <a href="{% url 'my_bookings' %}" class="text-gray-300 hover:text-primary transition-colors flex items-center">
+                            <i class="fas fa-calendar-check mr-3 text-sm w-4"></i>My Bookings
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'accounts:dashboard' %}" class="text-gray-300 hover:text-primary transition-colors flex items-center">
+                            <i class="fas fa-tachometer-alt mr-3 text-sm w-4"></i>Dashboard
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <a href="{% url 'career:career' %}" class="text-gray-300 hover:text-primary transition-colors flex items-center">
+                            <i class="fas fa-briefcase mr-3 text-sm w-4"></i>Career
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'contact:contact' %}" class="text-gray-300 hover:text-primary transition-colors flex items-center">
+                            <i class="fas fa-envelope mr-3 text-sm w-4"></i>Contact Us
+                        </a>
+                    </li>
+                    {% if custom_pages %}
+                        {% for page in custom_pages %}
+                        <li>
+                            <a href="{{ page.get_absolute_url }}" class="text-gray-300 hover:text-primary transition-colors flex items-center">
+                                <i class="fas fa-file-alt mr-3 text-sm w-4"></i>{{ page.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Contact & Business Info -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4 text-white">
+                    <i class="fas fa-address-book text-primary mr-2"></i>
+                    Contact Info
+                </h3>
+                
+                <!-- Consultation Fee -->
+                <div class="bg-primary bg-opacity-20 border border-primary rounded-lg p-4 mb-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-rupee-sign text-primary mr-3"></i>
+                        <div>
+                            <p class="text-primary font-semibold">Consultation Fee</p>
+                            <p class="text-2xl font-bold text-white">₹{{ site_settings.consultation_fee|default:"200.00" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Phone -->
+                    {% if site_settings.contact_phone %}
+                    <div class="flex items-start">
+                        <i class="fas fa-phone text-primary mr-3 mt-1"></i>
+                        <div>
+                            <p class="text-gray-300">{{ site_settings.contact_phone }}</p>
+                            <p class="text-xs text-gray-400">Call for appointments</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- WhatsApp -->
+                    {% if site_settings.contact_phone %}
+                    <div class="flex items-start">
+                        <i class="fab fa-whatsapp text-primary mr-3 mt-1"></i>
+                        <div>
+                            <p class="text-gray-300">{{ site_settings.contact_phone }}</p>
+                            <p class="text-xs text-gray-400">WhatsApp booking</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Email -->
+                    {% if site_settings.contact_email %}
+                    <div class="flex items-start">
+                        <i class="fas fa-envelope text-primary mr-3 mt-1"></i>
+                        <div>
+                            <p class="text-gray-300">{{ site_settings.contact_email }}</p>
+                            <p class="text-xs text-gray-400">Email us anytime</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Address -->
+                    {% if site_settings.contact_address %}
+                    <div class="flex items-start">
+                        <i class="fas fa-map-marker-alt text-primary mr-3 mt-1"></i>
+                        <div>
+                            <p class="text-gray-300 text-sm">{{ site_settings.contact_address|linebreaksbr }}</p>
+                            <p class="text-xs text-gray-400">Visit our clinic</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Business Hours -->
+                    <div class="flex items-start">
+                        <i class="fas fa-clock text-primary mr-3 mt-1"></i>
+                        <div>
+                            <p class="text-gray-300 text-sm">Mon - Sat: 9:00 AM - 6:00 PM</p>
+                            <p class="text-gray-300 text-sm">Sunday: By Appointment</p>
+                            <p class="text-xs text-gray-400">Clinic hours</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Media -->
+                <div class="mt-6">
+                    <h4 class="text-sm font-semibold mb-3 text-white">Follow Us</h4>
+                    <div class="flex space-x-3">
+                        {% if site_settings.facebook_url %}
+                        <a href="{{ site_settings.facebook_url }}" target="_blank" class="w-10 h-10 bg-gray-800 hover:bg-primary rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-facebook text-gray-300"></i>
+                        </a>
+                        {% endif %}
+                        {% if site_settings.instagram_url %}
+                        <a href="{{ site_settings.instagram_url }}" target="_blank" class="w-10 h-10 bg-gray-800 hover:bg-primary rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-instagram text-gray-300"></i>
+                        </a>
+                        {% endif %}
+                        {% if site_settings.youtube_url %}
+                        <a href="{{ site_settings.youtube_url }}" target="_blank" class="w-10 h-10 bg-gray-800 hover:bg-primary rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-youtube text-gray-300"></i>
+                        </a>
+                        {% endif %}
+                        {% if site_settings.linkedin_url %}
+                        <a href="{{ site_settings.linkedin_url }}" target="_blank" class="w-10 h-10 bg-gray-800 hover:bg-primary rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-linkedin text-gray-300"></i>
+                        </a>
+                        {% endif %}
+                        {% if site_settings.twitter_url %}
+                        <a href="{{ site_settings.twitter_url }}" target="_blank" class="w-10 h-10 bg-gray-800 hover:bg-primary rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-twitter text-gray-300"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Notice -->
+    <div class="bg-red-900 bg-opacity-50 border-t border-red-800">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-triangle text-red-400 mr-3 text-lg"></i>
+                <div class="flex-1">
+                    <p class="text-red-200 font-semibold mb-1">Medical Emergency Notice</p>
+                    <p class="text-red-300 text-sm">
+                        For medical emergencies, please call your nearest hospital or emergency services immediately. 
+                        Emergency Helpline: <strong>108</strong> | Ambulance: <strong>102</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Footer -->
+    <div class="bg-gray-800 border-t border-gray-700">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-gray-400 text-sm mb-4 md:mb-0">
+                    <p>&copy; {{ current_year }} {{ site_settings.site_name|default:"Bio-Physio Consultant" }}. All rights reserved.</p>
+                    <p class="mt-1">Designed for your health and wellness journey.</p>
+                    <p class="mt-1 text-xs">
+                        Developed by 
+                        <a href="https://whatznot.com" target="_blank" class="text-primary hover:text-primary-dark transition-colors font-medium">
+                            Whatznot
+                        </a>
+                    </p>
+                </div>
+                
+                <div class="flex items-center space-x-6 text-sm">
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors">Terms of Service</a>
+                    <a href="{% url 'contact:contact' %}" class="text-gray-400 hover:text-primary transition-colors">Support</a>
+                    <div class="flex items-center text-gray-400">
+                        <i class="fas fa-shield-alt mr-2 text-primary"></i>
+                        <span>Secure & Confidential</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Healthcare Info -->
+            <div class="mt-4 pt-4 border-t border-gray-700">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-gray-400">
+                    <div class="flex items-center">
+                        <i class="fas fa-user-shield text-primary mr-2"></i>
+                        <span>Licensed Healthcare Provider</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-lock text-primary mr-2"></i>
+                        <span>Patient Data Protected</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-certificate text-primary mr-2"></i>
+                        <span>Biochemic Consultant & Physiotherapist</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Buttons (Mobile) -->
+{% if site_settings.contact_phone %}
+<div class="fixed bottom-20 right-4 flex flex-col space-y-2 lg:hidden z-30">
+    <!-- WhatsApp -->
+    <a href="https://wa.me/{{ site_settings.contact_phone|slice:'1:' }}" target="_blank" 
+       class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110">
+        <i class="fab fa-whatsapp text-white text-xl"></i>
+    </a>
+    
+    <!-- Call -->
+    <a href="tel:{{ site_settings.contact_phone }}" 
+       class="w-12 h-12 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110">
+        <i class="fas fa-phone text-white"></i>
+    </a>
+</div>
+{% endif %}

@@ -1,0 +1,178 @@
+[
+{
+  "model": "blog.blogpost",
+  "pk": 1,
+  "fields": {
+    "title": "Top 5 Physiotherapy Exercises for Back Pain Relief",
+    "slug": "top-5-physiotherapy-exercises-for-back-pain-relief",
+    "youtube_url": "https://www.youtube.com/watch?v=4BOTvaRaDjI",
+    "youtube_video_id": "4BOTvaRaDjI",
+    "headline": "Learn effective exercises to relieve chronic back pain and improve your posture at home.",
+    "description": "This comprehensive video demonstrates 5 proven physiotherapy exercises that can help alleviate back pain and strengthen your core muscles. These exercises are safe for most people and can be done at home with no special equipment.\n\nDr. Pratap Bag explains the proper technique for each exercise and provides modifications for different fitness levels. Regular practice of these exercises can significantly reduce back pain and improve your overall spinal health.",
+    "key_points": "Proper warm-up techniques before exercising\nCat-cow stretches for spinal flexibility\nPelvic tilts for core strengthening\nBridge exercises for lower back support\nChild's pose for relaxation and stretching\nCool-down and breathing techniques",
+    "category": "physiotherapy",
+    "tags": "back pain, physiotherapy, exercises, stretching, core strength, posture",
+    "meta_description": "This comprehensive video demonstrates 5 proven physiotherapy exercises that can help alleviate back pain and strengthen your core muscles. These exerc...",
+    "status": "published",
+    "is_featured": true,
+    "view_count": 0,
+    "created_at": "2025-10-09T14:26:27.537Z",
+    "updated_at": "2025-10-09T14:26:27.537Z",
+    "published_at": "2025-10-09T14:26:27.537Z"
+  }
+},
+{
+  "model": "blog.blogpost",
+  "pk": 2,
+  "fields": {
+    "title": "Acupressure Points for Instant Headache Relief",
+    "slug": "acupressure-points-for-instant-headache-relief",
+    "youtube_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "youtube_video_id": "dQw4w9WgXcQ",
+    "headline": "Discover powerful acupressure techniques to naturally relieve headaches and migraines without medication.",
+    "description": "Learn about the most effective acupressure points for treating headaches and migraines. Dr. Pratap Bag demonstrates the exact location of pressure points and the proper technique for applying pressure.\n\nThis ancient healing technique can provide immediate relief from tension headaches, stress-related headaches, and even migraines. The video includes detailed instructions on how to locate each pressure point and the duration of pressure application.",
+    "key_points": "Locating the temple pressure points\nApplying pressure to the base of the skull\nUsing thumb pressure on hand acupoints\nForehead and eyebrow pressure techniques\nNeck and shoulder pressure point massage\nBreathing techniques during acupressure",
+    "category": "acupressure",
+    "tags": "headache relief, acupressure, pressure points, migraine, natural healing",
+    "meta_description": "Learn about the most effective acupressure points for treating headaches and migraines. Dr. Pratap Bag demonstrates the exact location of pressure poi...",
+    "status": "published",
+    "is_featured": true,
+    "view_count": 1,
+    "created_at": "2025-10-09T14:26:27.551Z",
+    "updated_at": "2025-10-09T14:26:27.551Z",
+    "published_at": "2025-10-09T14:26:27.551Z"
+  }
+},
+{
+  "model": "blog.blogpost",
+  "pk": 3,
+  "fields": {
+    "title": "Therapeutic Massage Techniques for Stress Relief",
+    "slug": "therapeutic-massage-techniques-for-stress-relief",
+    "youtube_url": "https://www.youtube.com/watch?v=oavMtUWDBTM",
+    "youtube_video_id": "oavMtUWDBTM",
+    "headline": "Professional massage techniques you can use at home to reduce stress and muscle tension.",
+    "description": "Discover professional massage techniques that can help reduce stress, improve circulation, and relieve muscle tension. This video covers basic massage strokes that are safe and effective for self-massage or partner massage.\n\nDr. Pratap Bag explains the benefits of therapeutic massage and demonstrates proper hand positions, pressure application, and stroke techniques. Learn how to create a relaxing massage routine that fits into your daily wellness practice.",
+    "key_points": "Basic massage stroke techniques\nProper hand positioning and pressure\nSelf-massage techniques for neck and shoulders\nPartner massage for back and legs\nCreating a relaxing environment\nBenefits of regular massage therapy",
+    "category": "massage",
+    "tags": "massage therapy, stress relief, relaxation, self-massage, wellness",
+    "meta_description": "Discover professional massage techniques that can help reduce stress, improve circulation, and relieve muscle tension. This video covers basic massage...",
+    "status": "published",
+    "is_featured": false,
+    "view_count": 0,
+    "created_at": "2025-10-09T14:26:27.573Z",
+    "updated_at": "2025-10-09T14:26:27.573Z",
+    "published_at": "2025-10-09T14:26:27.573Z"
+  }
+},
+{
+  "model": "blog.blogpost",
+  "pk": 4,
+  "fields": {
+    "title": "Daily Stretching Routine for Office Workers",
+    "slug": "daily-stretching-routine-for-office-workers",
+    "youtube_url": "https://www.youtube.com/watch?v=kJQP7kiw5Fk",
+    "youtube_video_id": "kJQP7kiw5Fk",
+    "headline": "Simple stretches to combat the effects of prolonged sitting and improve workplace wellness.",
+    "description": "Office workers often experience neck pain, back stiffness, and poor posture due to prolonged sitting. This video provides a comprehensive stretching routine specifically designed for people who work at desks.\n\nThe routine includes stretches that can be done at your desk during work breaks, as well as a more complete routine for home practice. Each stretch is demonstrated clearly with proper form and safety tips.",
+    "key_points": "Desk-friendly stretches for work breaks\nNeck and shoulder tension relief\nHip flexor stretches for seated workers\nSpinal twists for back mobility\nEye exercises for computer users\nCreating healthy workplace habits",
+    "category": "exercise",
+    "tags": "office stretches, desk exercises, workplace wellness, posture, sitting",
+    "meta_description": "Office workers often experience neck pain, back stiffness, and poor posture due to prolonged sitting. This video provides a comprehensive stretching r...",
+    "status": "published",
+    "is_featured": false,
+    "view_count": 0,
+    "created_at": "2025-10-09T14:26:27.593Z",
+    "updated_at": "2025-10-09T14:26:27.593Z",
+    "published_at": "2025-10-09T14:26:27.592Z"
+  }
+},
+{
+  "model": "blog.blogpost",
+  "pk": 5,
+  "fields": {
+    "title": "Natural Pain Management Techniques",
+    "slug": "natural-pain-management-techniques",
+    "youtube_url": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+    "youtube_video_id": "aqz-KE-bpKQ",
+    "headline": "Explore drug-free methods for managing chronic pain using alternative medicine approaches.",
+    "description": "This educational video explores various natural pain management techniques that can be used alongside or as alternatives to conventional pain medication. Dr. Pratap Bag shares evidence-based approaches from alternative medicine.\n\nLearn about breathing techniques, mindfulness practices, and physical therapies that can help manage chronic pain conditions. The video also covers when to seek professional help and how to integrate these techniques into a comprehensive pain management plan.",
+    "key_points": "Understanding chronic pain mechanisms\nBreathing techniques for pain relief\nMindfulness and meditation practices\nHeat and cold therapy applications\nGentle movement for pain management\nCreating a personal pain management plan",
+    "category": "pain_management",
+    "tags": "pain management, natural healing, chronic pain, alternative medicine, mindfulness",
+    "meta_description": "This educational video explores various natural pain management techniques that can be used alongside or as alternatives to conventional pain medicati...",
+    "status": "published",
+    "is_featured": false,
+    "view_count": 0,
+    "created_at": "2025-10-09T14:26:27.609Z",
+    "updated_at": "2025-10-09T14:26:27.609Z",
+    "published_at": "2025-10-09T14:26:27.609Z"
+  }
+},
+{
+  "model": "blog.blogpost",
+  "pk": 6,
+  "fields": {
+    "title": "Nutrition for Joint Health and Inflammation",
+    "slug": "nutrition-for-joint-health-and-inflammation",
+    "youtube_url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "youtube_video_id": "jNQXAC9IVRw",
+    "headline": "Discover foods that can help reduce inflammation and support healthy joints naturally.",
+    "description": "Learn about the powerful connection between nutrition and joint health. This video explores anti-inflammatory foods and dietary strategies that can help reduce joint pain and support overall joint function.\n\nDr. Pratap Bag discusses which foods to include and avoid for optimal joint health, along with simple meal planning tips. The video also covers supplements that may benefit joint health when used appropriately.",
+    "key_points": "Anti-inflammatory foods for joint health\nFoods to avoid that increase inflammation\nOmega-3 fatty acids and joint function\nAntioxidant-rich foods for healing\nHydration and joint lubrication\nSimple meal planning for joint health",
+    "category": "nutrition",
+    "tags": "nutrition, joint health, anti-inflammatory, diet, wellness, healthy eating",
+    "meta_description": "Learn about the powerful connection between nutrition and joint health. This video explores anti-inflammatory foods and dietary strategies that can he...",
+    "status": "published",
+    "is_featured": false,
+    "view_count": 0,
+    "created_at": "2025-10-09T14:26:27.625Z",
+    "updated_at": "2025-10-09T14:26:27.625Z",
+    "published_at": "2025-10-09T14:26:27.624Z"
+  }
+},
+{
+  "model": "blog.blogpost",
+  "pk": 7,
+  "fields": {
+    "title": "Mental Wellness and Physical Health Connection",
+    "slug": "mental-wellness-and-physical-health-connection",
+    "youtube_url": "https://www.youtube.com/watch?v=ScMzIvxBSi4",
+    "youtube_video_id": "ScMzIvxBSi4",
+    "headline": "Understanding how mental health impacts physical well-being and vice versa.",
+    "description": "Explore the important connection between mental wellness and physical health. This video discusses how stress, anxiety, and mental health conditions can manifest as physical symptoms and affect overall health.\n\nLearn practical strategies for improving both mental and physical well-being through integrated approaches including movement, mindfulness, and lifestyle modifications that support both mind and body.",
+    "key_points": "Mind-body connection in health\nHow stress affects physical symptoms\nRelaxation techniques for mental wellness\nPhysical activities that boost mood\nCreating healthy daily routines\nBuilding resilience and coping skills",
+    "category": "mental_health",
+    "tags": "mental health, mind-body connection, stress management, wellness, holistic health",
+    "meta_description": "Explore the important connection between mental wellness and physical health. This video discusses how stress, anxiety, and mental health conditions c...",
+    "status": "published",
+    "is_featured": false,
+    "view_count": 0,
+    "created_at": "2025-10-09T14:26:27.632Z",
+    "updated_at": "2025-10-09T14:26:27.632Z",
+    "published_at": "2025-10-09T14:26:27.632Z"
+  }
+},
+{
+  "model": "blog.blogpost",
+  "pk": 8,
+  "fields": {
+    "title": "Post-Injury Rehabilitation Basics",
+    "slug": "post-injury-rehabilitation-basics",
+    "youtube_url": "https://www.youtube.com/watch?v=fC7oUOUEEi4",
+    "youtube_video_id": "fC7oUOUEEi4",
+    "headline": "Essential rehabilitation principles for safe recovery from common injuries.",
+    "description": "This educational video covers the fundamental principles of post-injury rehabilitation. Whether recovering from a sports injury, workplace injury, or accident, understanding proper rehabilitation is crucial for complete recovery.\n\nDr. Pratap Bag explains the phases of healing, appropriate exercises for different recovery stages, and when to progress or modify activities. Safety guidelines and red flags that require immediate medical attention are also covered.",
+    "key_points": "Understanding the healing process\nEarly stage rehabilitation principles\nProgressive exercise protocols\nPain vs. normal discomfort during recovery\nWhen to seek professional help\nPreventing re-injury through proper rehabilitation",
+    "category": "rehabilitation",
+    "tags": "injury recovery, rehabilitation, healing, physiotherapy, exercise therapy",
+    "meta_description": "This educational video covers the fundamental principles of post-injury rehabilitation. Whether recovering from a sports injury, workplace injury, or ...",
+    "status": "published",
+    "is_featured": false,
+    "view_count": 0,
+    "created_at": "2025-10-09T14:26:27.647Z",
+    "updated_at": "2025-10-09T14:26:27.647Z",
+    "published_at": "2025-10-09T14:26:27.647Z"
+  }
+}
+]

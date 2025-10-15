@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <!-- SEO Meta Tags -->
+    <title>{% block title %}{{ site_settings.site_name|default:"Bio-Physio Consultant" }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ site_settings.meta_description|default:"Professional healthcare services including physiotherapy, acupressure, massage therapy by certified practitioner." }}{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}{{ site_settings.meta_keywords|default:"physiotherapy, acupressure, massage therapy, healthcare, alternative medicine, bio-physio consultant" }}{% endblock %}">
+    <meta name="author" content="Bio-Physio Consultant">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{% block og_title %}{{ site_settings.site_name|default:"Bio-Physio Consultant" }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ site_settings.site_description|default:"Professional healthcare services" }}{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="{{ site_settings.pwa_theme_color|default:'#10B981' }}">
+    <meta name="msapplication-navbutton-color" content="{{ site_settings.pwa_theme_color|default:'#10B981' }}">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Favicon -->
+    {% if site_settings.site_favicon %}
+    <link rel="icon" type="image/png" href="{{ site_settings.site_favicon.url }}">
+    {% else %}
+    <link rel="icon" type="image/png" href="{% load static %}{% static 'images/loogoo.png' %}">
+    {% endif %}
+    <link rel="apple-touch-icon" href="{% load static %}{% static 'images/loogoo.png' %}">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{% url 'manifest' %}">
+    
+    <!-- CSS -->
+    {% load static %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '{{ site_settings.pwa_theme_color|default:"#10B981" }}',
+                        secondary: '#0F172A',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="h-full bg-gray-50 flex flex-col">
+    
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 bg-primary text-white p-2 z-50">
+        Skip to main content
+    </a>
+    
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        {% include 'includes/header.html' %}
+    </header>
+    
+    <!-- Main Content -->
+    <main id="main-content" class="flex-1">
+        <!-- Messages -->
+        {% if messages %}
+        <div class="fixed top-20 right-4 z-50 space-y-2">
+            {% for message in messages %}
+            <div class="{% if message.tags == 'error' %}bg-red-100 border border-red-400 text-red-700{% elif message.tags == 'success' %}bg-green-100 border border-green-400 text-green-700{% elif message.tags == 'warning' %}bg-yellow-100 border border-yellow-400 text-yellow-700{% else %}bg-blue-100 border border-blue-400 text-blue-700{% endif %} px-4 py-3 rounded-lg shadow-lg max-w-sm" role="alert">
+                <div class="flex items-center">
+                    <i class="fas fa-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %} mr-3"></i>
+                    <span class="text-sm">{{ message }}</span>
+                    <button type="button" class="ml-auto {% if message.tags == 'error' %}text-red-500 hover:text-red-700{% elif message.tags == 'success' %}text-green-500 hover:text-green-700{% elif message.tags == 'warning' %}text-yellow-500 hover:text-yellow-700{% else %}text-blue-500 hover:text-blue-700{% endif %}" onclick="this.parentElement.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white">
+        {% include 'includes/footer.html' %}
+    </footer>
+    
+    <!-- Mobile Bottom Navigation (visible on mobile only) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 lg:hidden z-40">
+        {% include 'includes/mobile_nav.html' %}
+    </nav>
+    
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-20 right-4 bg-primary text-white p-3 rounded-full shadow-lg hidden hover:bg-primary-dark transition-all duration-300 z-30">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+    
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p class="text-gray-700">Loading...</p>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="{% static 'js/app.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+    
+    <!-- PWA Service Worker -->
+    <script>
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                .then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+    
+    <!-- Google Analytics -->
+    {% if site_settings.google_analytics_id %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ site_settings.google_analytics_id }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ site_settings.google_analytics_id }}');
+    </script>
+    {% endif %}
+</body>
+</html>

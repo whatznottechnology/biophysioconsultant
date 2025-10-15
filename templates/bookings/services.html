@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Services - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<!-- Services Hero Section -->
+<section class="bg-gradient-to-br from-green-50 to-blue-50 py-16">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Our Healthcare Services</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Comprehensive healthcare solutions tailored to your individual needs using traditional and modern therapeutic approaches
+        </p>
+    </div>
+</section>
+
+<!-- Services Grid -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        {% if services %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for service in services %}
+            <div class="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-xl transition-shadow duration-300">
+                <!-- Service Icon -->
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-hand-holding-medical text-2xl"></i>
+                </div>
+                
+                <!-- Service Details -->
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ service.name }}</h3>
+                <p class="text-gray-600 mb-4">{{ service.description }}</p>
+                
+                <!-- Service Info -->
+                <div class="space-y-2 mb-6">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500">Duration:</span>
+                        <span class="text-sm font-medium text-gray-900">{{ service.duration_minutes }} minutes</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500">Price:</span>
+                        <span class="text-lg font-bold text-green-600">₹{{ service.price }}</span>
+                    </div>
+                    {% if service.requires_prescription %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-orange-600">
+                            <i class="fas fa-prescription-bottle mr-1"></i>
+                            Prescription Required
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Book Button -->
+                <a href="{% url 'book_appointment' %}" 
+                   class="w-full bg-green-600 text-white text-center py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors block">
+                    <i class="fas fa-calendar-plus mr-2"></i>Book Now
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- No Services -->
+        <div class="text-center py-16">
+            <i class="fas fa-stethoscope text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-2xl font-medium text-gray-900 mb-2">No Services Available</h3>
+            <p class="text-gray-600">Our services will be available soon. Please check back later.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Service Categories -->
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Treatment Categories</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Our specialized treatment modalities for comprehensive healthcare
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white rounded-xl p-6 text-center shadow-md">
+                <i class="fas fa-hands text-3xl text-green-600 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Manual Therapy</h3>
+                <p class="text-gray-600 text-sm">Hands-on healing techniques including massage and acupressure</p>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 text-center shadow-md">
+                <i class="fas fa-leaf text-3xl text-green-600 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Alternative Medicine</h3>
+                <p class="text-gray-600 text-sm">Natural healing approaches for holistic wellness</p>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 text-center shadow-md">
+                <i class="fas fa-walking text-3xl text-green-600 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Physiotherapy</h3>
+                <p class="text-gray-600 text-sm">Physical rehabilitation and movement therapy</p>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 text-center shadow-md">
+                <i class="fas fa-heartbeat text-3xl text-green-600 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Wellness Consultation</h3>
+                <p class="text-gray-600 text-sm">Comprehensive health assessment and lifestyle guidance</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Why Choose Our Services?</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-certificate text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Certified Practitioner</h3>
+                <p class="text-gray-600">Qualified and experienced healthcare professional with multiple certifications</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-user-friends text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Personalized Care</h3>
+                <p class="text-gray-600">Individual treatment plans tailored to your specific health needs</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-clock text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Flexible Scheduling</h3>
+                <p class="text-gray-600">Convenient appointment times that fit your busy schedule</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-16 bg-green-600 text-white">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-6">Ready to Book Your Appointment?</h2>
+        <p class="text-xl mb-8 max-w-2xl mx-auto">
+            Take the first step towards better health with our professional healthcare services
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'book_appointment' %}" 
+               class="bg-white text-green-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                Book Appointment Now
+            </a>
+            <a href="{% url 'contact:contact' %}" 
+               class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors">
+                Contact Us
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

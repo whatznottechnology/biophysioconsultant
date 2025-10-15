@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Pratap Bag - Bio-Physio Consultant{% endblock %}
+
+{% block content %}
+<!-- About Hero Section -->
+<section class="bg-gradient-to-br from-green-50 to-blue-50 py-12 md:py-16">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <!-- Practitioner Image -->
+            <div class="text-center">
+                <div class="relative inline-block">
+                    <img src="{% static 'images/pratap.jpeg' %}" 
+                         alt="Pratap Bag" 
+                         class="w-48 h-48 md:w-64 md:h-64 object-cover rounded-2xl shadow-xl">
+                    
+                    <!-- Experience Badge -->
+                    <div class="absolute -top-2 -right-2 md:-top-4 md:-right-4 bg-green-600 text-white rounded-full p-3 md:p-4 shadow-lg">
+                        <div class="text-center">
+                            <p class="text-xl md:text-2xl font-bold">{{ years_of_experience|default:"15" }}+</p>
+                            <p class="text-xs">Years</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- About Content -->
+            <div class="text-center lg:text-left">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                    Pratap Bag
+                </h1>
+                
+                <p class="text-lg md:text-xl text-green-600 font-semibold mb-2">
+                    Biochemic Consultant, Physiotherapist and Trainer
+                </p>
+                
+                <p class="text-base md:text-lg text-gray-600 mb-6">
+                    Dedicated healthcare practitioner specializing in biochemic consultation, physiotherapy, and alternative medicine with extensive experience in holistic healing approaches.
+                </p>
+                
+                <!-- Qualifications -->
+                <div class="mb-4">
+                    <h3 class="text-sm font-semibold text-gray-900 mb-2 flex items-center justify-center lg:justify-start">
+                        <i class="fas fa-graduation-cap text-green-600 mr-2"></i>
+                        Qualifications
+                    </h3>
+                    <p class="text-sm text-gray-700">M. D. (Acu.), M. B. S., DMT, DPT, D. Mass. T., D. Cup. T, FWT, PET.</p>
+                </div>
+                
+                <!-- Registration -->
+                <div class="mb-6">
+                    <p class="text-sm text-gray-600">
+                        <i class="fas fa-certificate text-green-600 mr-2"></i>
+                        Registration No: S/53515/201
+                    </p>
+                </div>
+                
+                <!-- CTA Button -->
+                <a href="{% url 'book_appointment' %}" 
+                   class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors inline-flex items-center text-sm md:text-base">
+                    <i class="fas fa-calendar-plus mr-2"></i>
+                    Book Consultation
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Working Experience Section -->
+<section class="py-12 md:py-16 bg-white">
+    <div class="container mx-auto px-4 max-w-5xl">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-8">Working Experience</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Training Background -->
+            <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6">
+                <div class="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-chalkboard-teacher text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-3 text-center">Training Experience</h3>
+                <p class="text-sm text-gray-700 text-center">
+                    Formerly attached as Trainer with S.B. Yoga Medical College, Kolkata
+                </p>
+            </div>
+            
+            <!-- Corporate Experience -->
+            <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6">
+                <div class="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-building text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-3 text-center">Corporate Background</h3>
+                <p class="text-sm text-gray-700 text-center">
+                    Ex-IBMer, Kolkata - Bringing corporate professionalism to healthcare
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Experience and Contributions Section -->
+<section class="py-12 md:py-16 bg-gray-50">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-8">Experience & Contributions</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Healthcare Services -->
+            <div class="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                <i class="fas fa-heartbeat text-3xl text-green-600 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Healthcare Services</h3>
+                <p class="text-sm text-gray-700">
+                    Engaged in Biochemic & Physiotherapy services in the field of health and wellness
+                </p>
+            </div>
+            
+            <!-- Complex Disease Treatment -->
+            <div class="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                <i class="fas fa-stethoscope text-3xl text-green-600 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Complex Cases</h3>
+                <p class="text-sm text-gray-700">
+                    Successfully treated many complex diseases through Biochemic and Physiotherapy approaches
+                </p>
+            </div>
+            
+            <!-- Author -->
+            <div class="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                <i class="fas fa-book text-3xl text-green-600 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Published Author</h3>
+                <p class="text-sm text-gray-700">
+                    Author of the book "Acupressure Tips" - sharing knowledge with the community
+                </p>
+            </div>
+            
+            <!-- Digital Educator -->
+            <div class="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                <i class="fas fa-video text-3xl text-green-600 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Digital Educator</h3>
+                <p class="text-sm text-gray-700">
+                    Blogger and YouTuber promoting health awareness and home-based remedies
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Areas of Special Expertise -->
+<section class="py-12 md:py-16 bg-white">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center mb-8 md:mb-12">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Areas of Special Expertise</h2>
+            <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
+                Specialized services combining traditional wisdom with modern techniques
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Acupressure & Magnet Therapy -->
+            <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6 text-center">
+                <i class="fas fa-hands text-3xl text-green-600 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Acupressure Therapy</h3>
+                <p class="text-sm text-gray-700 mb-3">& Magnet Therapy</p>
+                <p class="text-xs text-gray-600">Natural healing through pressure points and magnetic fields</p>
+            </div>
+            
+            <!-- Massage & Cupping -->
+            <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6 text-center">
+                <i class="fas fa-spa text-3xl text-green-600 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Massage Therapy</h3>
+                <p class="text-sm text-gray-700 mb-3">& Cupping Therapy</p>
+                <p class="text-xs text-gray-600">Therapeutic massage and traditional cupping techniques</p>
+            </div>
+            
+            <!-- Physiotherapy Training -->
+            <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6 text-center">
+                <i class="fas fa-walking text-3xl text-green-600 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Physiotherapy</h3>
+                <p class="text-sm text-gray-700 mb-3">Practical Training</p>
+                <p class="text-xs text-gray-600">Hands-on physiotherapy techniques and rehabilitation</p>
+            </div>
+            
+            <!-- Online Health Education -->
+            <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6 text-center">
+                <i class="fas fa-laptop-medical text-3xl text-green-600 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Online Health Education</h3>
+                <p class="text-sm text-gray-700 mb-3">& Bio-Homoeo-Physio Services</p>
+                <p class="text-xs text-gray-600">Digital healthcare education and integrated healing approaches</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Goal and Objective Section -->
+<section class="py-12 md:py-16 bg-gray-900 text-white">
+    <div class="container mx-auto px-4 max-w-4xl text-center">
+        <h2 class="text-2xl md:text-3xl font-bold mb-6">Goal & Objective</h2>
+        
+        <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-8 mb-8">
+            <i class="fas fa-bullseye text-4xl text-green-400 mb-6"></i>
+            <p class="text-lg md:text-xl text-gray-100 leading-relaxed">
+                To bring simple, effective, and scientifically sound methods of treatment to both rural and urban communities, and to promote alternative medicine accurately and positively in public awareness.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div class="flex flex-col items-center">
+                <i class="fas fa-users text-2xl text-green-400 mb-3"></i>
+                <h3 class="font-semibold mb-2">Community Reach</h3>
+                <p class="text-gray-300">Serving both rural and urban populations</p>
+            </div>
+            
+            <div class="flex flex-col items-center">
+                <i class="fas fa-leaf text-2xl text-green-400 mb-3"></i>
+                <h3 class="font-semibold mb-2">Natural Healing</h3>
+                <p class="text-gray-300">Promoting effective alternative medicine</p>
+            </div>
+            
+            <div class="flex flex-col items-center">
+                <i class="fas fa-lightbulb text-2xl text-green-400 mb-3"></i>
+                <h3 class="font-semibold mb-2">Public Awareness</h3>
+                <p class="text-gray-300">Educating about scientifically sound treatments</p>
+            </div>
+        </div>
+        
+        <div class="mt-8">
+            <a href="{% url 'book_appointment' %}" 
+               class="bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors inline-flex items-center text-lg">
+                <i class="fas fa-calendar-plus mr-3"></i>
+                Start Your Healing Journey
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="py-12 md:py-16 bg-green-600 text-white">
+    <div class="container mx-auto px-4 text-center max-w-4xl">
+        <h2 class="text-2xl md:text-3xl font-bold mb-4">Ready to Experience Holistic Healthcare?</h2>
+        <p class="text-base md:text-lg text-green-100 mb-8">
+            Book a consultation and discover personalized treatment approaches
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-10">
+            <a href="{% url 'book_appointment' %}" 
+               class="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors text-sm md:text-base">
+                Book Appointment
+            </a>
+            <a href="{% url 'contact:contact' %}" 
+               class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors text-sm md:text-base">
+                Contact Us
+            </a>
+        </div>
+        
+        <!-- Quick Contact Info -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+            {% if site_settings.contact_phone %}
+            <div class="flex items-center justify-center">
+                <i class="fas fa-phone text-green-200 mr-2"></i>
+                <span>{{ site_settings.contact_phone }}</span>
+            </div>
+            {% endif %}
+            {% if site_settings.contact_email %}
+            <div class="flex items-center justify-center">
+                <i class="fas fa-envelope text-green-200 mr-2"></i>
+                <span>{{ site_settings.contact_email }}</span>
+            </div>
+            {% endif %}
+            <div class="flex items-center justify-center">
+                <i class="fas fa-clock text-green-200 mr-2"></i>
+                <span>Mon-Sat: 9AM-6PM</span>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

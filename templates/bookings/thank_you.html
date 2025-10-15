@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Thank You - {{ site_settings.site_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confetti {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1000;
+    }
+    
+    .confetti-piece {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: #f39c12;
+        animation: confetti-fall 3s linear;
+    }
+    
+    @keyframes confetti-fall {
+        0% {
+            transform: translateY(-100vh) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100vh) rotate(720deg);
+            opacity: 0;
+        }
+    }
+    
+    .success-icon {
+        animation: bounce 1s ease-in-out infinite alternate;
+    }
+    
+    @keyframes bounce {
+        0% { transform: translateY(0px); }
+        100% { transform: translateY(-10px); }
+    }
+    
+    .fade-in {
+        animation: fadeIn 0.8s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center px-4">
+    <!-- Confetti Animation -->
+    <div class="confetti" id="confetti"></div>
+    
+    <div class="max-w-2xl w-full">
+        <div class="bg-white rounded-2xl shadow-xl p-8 text-center fade-in">
+            <!-- Success Icon -->
+            <div class="mb-6">
+                <div class="success-icon mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check text-4xl text-green-600"></i>
+                </div>
+            </div>
+            
+            <!-- Main Message -->
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">
+                🎉 Thank You for Your Booking!
+            </h1>
+            
+            <p class="text-lg text-gray-600 mb-8">
+                Your appointment has been successfully booked with Dr. Pratap Bag. 
+                We look forward to providing you with excellent healthcare service.
+            </p>
+            
+            <!-- Booking Details Card -->
+            {% if booking %}
+            <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-8 text-left">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 text-center">
+                    <i class="fas fa-calendar-check mr-2 text-green-600"></i>
+                    Booking Details
+                </h3>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Booking ID:</span>
+                        <span class="font-mono text-green-600 font-semibold">#{{ booking.booking_id }}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Service:</span>
+                        <span class="font-medium">{{ booking.service.name }}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Patient:</span>
+                        <span class="font-medium">{{ booking.patient_name }}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Phone:</span>
+                        <span class="font-medium">{{ booking.patient_phone }}</span>
+                    </div>
+                    
+                    {% if booking.patient_email %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Email:</span>
+                        <span class="font-medium">{{ booking.patient_email }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Amount Paid:</span>
+                        <span class="font-bold text-green-600">₹{{ booking.payment_amount }}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Payment Status:</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            {{ booking.get_payment_status_display }}
+                        </span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Booking Date:</span>
+                        <span class="font-medium">{{ booking.created_at|date:"F j, Y g:i A" }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- What's Next Section -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8 text-left">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 text-center">
+                    <i class="fas fa-info-circle mr-2 text-blue-600"></i>
+                    What Happens Next?
+                </h3>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                            <span class="text-sm font-semibold text-blue-600">1</span>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900">Confirmation Call</h4>
+                            <p class="text-sm text-gray-600">Our team will contact you within 24 hours to confirm your appointment and provide clinic details.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                            <span class="text-sm font-semibold text-blue-600">2</span>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900">Appointment Scheduling</h4>
+                            <p class="text-sm text-gray-600">We'll schedule your appointment at a convenient date and time that works for both you and Dr. Pratap Bag.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                            <span class="text-sm font-semibold text-blue-600">3</span>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900">Consultation</h4>
+                            <p class="text-sm text-gray-600">Visit our clinic for your consultation. Please bring any relevant medical reports or prescriptions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Clinic Information -->
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8 text-left">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 text-center">
+                    <i class="fas fa-map-marker-alt mr-2 text-red-500"></i>
+                    Clinic Information
+                </h3>
+                
+                <div class="space-y-2">
+                    <p class="font-medium text-gray-900">Bio-Physio Consultant Clinic</p>
+                    <p class="text-sm text-gray-600">
+                        <i class="fas fa-user-md mr-1"></i>
+                        M. D. (Acu.), M. B. S., DMT, DPT, D. Mass. T., D. Cup. T, FWT, PET.
+                    </p>
+                    <p class="text-sm text-gray-600">
+                        <i class="fas fa-certificate mr-1"></i>
+                        Registration: S/53515/201
+                    </p>
+                    <p class="text-sm text-gray-600">
+                        <i class="fas fa-stethoscope mr-1"></i>
+                        Specializes in: Acupressure, Magnet Therapy, Massage, Cupping, Physiotherapy, Biochemic Consultancy
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'home' %}" 
+                   class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition duration-200">
+                    <i class="fas fa-home mr-2"></i>
+                    Return to Homepage
+                </a>
+                
+                <a href="{% url 'book_appointment' %}" 
+                   class="inline-flex items-center justify-center px-6 py-3 border border-green-600 text-base font-medium rounded-lg text-green-600 bg-white hover:bg-green-50 transition duration-200">
+                    <i class="fas fa-plus mr-2"></i>
+                    Book Another Appointment
+                </a>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <p class="text-sm text-gray-600 mb-2">
+                    Questions or need to reschedule?
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
+                    {% if site_settings.contact_phone %}
+                    <a href="tel:{{ site_settings.contact_phone }}" class="text-green-600 hover:text-green-700 flex items-center">
+                        <i class="fas fa-phone mr-2"></i>
+                        Call us: {{ site_settings.contact_phone }}
+                    </a>
+                    {% endif %}
+                    {% if site_settings.contact_email %}
+                    <a href="mailto:{{ site_settings.contact_email }}" class="text-green-600 hover:text-green-700 flex items-center">
+                        <i class="fas fa-envelope mr-2"></i>
+                        Email: {{ site_settings.contact_email }}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Social Sharing -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <p class="text-sm text-gray-600 mb-3">Share your experience:</p>
+                <div class="flex justify-center space-x-4">
+                    <a href="#" class="text-blue-600 hover:text-blue-700 text-xl">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="#" class="text-blue-400 hover:text-blue-500 text-xl">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-green-500 hover:text-green-600 text-xl">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Create confetti effect
+    function createConfetti() {
+        const confettiContainer = document.getElementById('confetti');
+        const colors = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#f1c40f'];
+        
+        for (let i = 0; i < 50; i++) {
+            const confettiPiece = document.createElement('div');
+            confettiPiece.className = 'confetti-piece';
+            confettiPiece.style.left = Math.random() * 100 + '%';
+            confettiPiece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confettiPiece.style.animationDelay = Math.random() * 3 + 's';
+            confettiPiece.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            confettiContainer.appendChild(confettiPiece);
+        }
+        
+        // Remove confetti after animation
+        setTimeout(() => {
+            confettiContainer.innerHTML = '';
+        }, 6000);
+    }
+    
+    // Start confetti animation
+    createConfetti();
+    
+    // Auto-hide success message after 5 seconds and show call-to-action
+    setTimeout(() => {
+        const mainMessage = document.querySelector('h1');
+        if (mainMessage) {
+            mainMessage.style.transition = 'all 0.5s ease';
+            mainMessage.style.transform = 'scale(0.9)';
+        }
+    }, 5000);
+    
+    // Add click-to-copy functionality for booking ID
+    const bookingId = document.querySelector('.font-mono');
+    if (bookingId) {
+        bookingId.style.cursor = 'pointer';
+        bookingId.title = 'Click to copy booking ID';
+        
+        bookingId.addEventListener('click', function() {
+            const text = this.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                // Show temporary success message
+                const originalText = this.textContent;
+                this.textContent = 'Copied!';
+                this.style.color = '#10B981';
+                
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.style.color = '#059669';
+                }, 1000);
+            });
+        });
+    }
+    
+    // Add smooth scroll to action buttons
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Print functionality (can be triggered with Ctrl+P)
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'p') {
+            e.preventDefault();
+            window.print();
+        }
+    });
+});
+
+// Add print styles
+const printStyles = `
+    @media print {
+        .confetti, .no-print { display: none !important; }
+        body { background: white !important; }
+        .bg-gradient-to-br { background: white !important; }
+        .shadow-xl { box-shadow: none !important; }
+        .rounded-2xl { border-radius: 0 !important; }
+        .border { border: 1px solid #ccc !important; }
+    }
+`;
+
+const styleSheet = document.createElement('style');
+styleSheet.type = 'text/css';
+styleSheet.innerText = printStyles;
+document.head.appendChild(styleSheet);
+</script>
+{% endblock %}

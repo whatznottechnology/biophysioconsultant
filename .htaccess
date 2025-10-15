@@ -1,0 +1,5 @@
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/whateyef/biophysioconsultant.in"
+PassengerBaseURI "/"
+PassengerPython "/home/whateyef/virtualenv/biophysioconsultant.in/3.12/bin/python"
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
