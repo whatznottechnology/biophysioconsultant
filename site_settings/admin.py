@@ -1,58 +1,64 @@
 from django.contrib import admin
+from django.utils.html import format_html
+from unfold.admin import ModelAdmin
+from unfold.decorators import display
 from .models import SiteSettings, Testimonial, PaymentSettings, CustomPage
 
 @admin.register(SiteSettings)
-class SiteSettingsAdmin(admin.ModelAdmin):
+class SiteSettingsAdmin(ModelAdmin):
     fieldsets = (
-        ('Site Information', {
+        ('🏥 Site Information', {
             'fields': (
                 'site_name', 'site_tagline', 'site_description', 
                 'site_logo', 'site_favicon'
-            )
+            ),
+            'classes': ['tab']
         }),
-        ('SEO Settings', {
+        ('🔍 SEO Settings', {
             'fields': ('meta_title', 'meta_description', 'meta_keywords'),
-            'classes': ('collapse',)
+            'classes': ['tab']
         }),
-        ('Contact Information', {
-            'fields': ('contact_phone', 'contact_email', 'contact_address')
+        ('📞 Contact Information', {
+            'fields': ('contact_phone', 'contact_email', 'contact_address'),
+            'classes': ['tab']
         }),
-        ('Social Media', {
+        ('📱 Social Media', {
             'fields': (
                 'facebook_url', 'twitter_url', 'instagram_url', 
                 'linkedin_url', 'youtube_url'
             ),
-            'classes': ('collapse',)
+            'classes': ['tab']
         }),
-        ('Business Settings', {
+        ('⚙️ Business Settings', {
             'fields': (
                 'practice_start_year', 'consultation_fee', 'is_booking_enabled', 'is_payment_enabled',
                 'booking_advance_days', 'booking_cancel_hours'
-            )
+            ),
+            'classes': ['tab']
         }),
-        ('Email Settings', {
+        ('📧 Email Settings', {
             'fields': (
                 'admin_email', 'send_booking_notifications', 
                 'send_reminder_notifications'
             ),
-            'classes': ('collapse',)
+            'classes': ['tab']
         }),
-        ('Maintenance', {
+        ('🔧 Maintenance', {
             'fields': ('maintenance_mode', 'maintenance_message'),
-            'classes': ('collapse',)
+            'classes': ['tab']
         }),
-        ('Analytics & Tracking', {
+        ('📊 Analytics & Tracking', {
             'fields': (
                 'google_analytics_id', 'google_tag_manager_id', 'facebook_pixel_id'
             ),
-            'classes': ('collapse',)
+            'classes': ['tab']
         }),
-        ('PWA Settings', {
+        ('📱 PWA Settings', {
             'fields': (
                 'pwa_app_name', 'pwa_short_name', 'pwa_theme_color', 
                 'pwa_background_color'
             ),
-            'classes': ('collapse',)
+            'classes': ['tab']
         }),
     )
     
@@ -65,79 +71,112 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         return False
 
 @admin.register(Testimonial)
-class TestimonialAdmin(admin.ModelAdmin):
+class TestimonialAdmin(ModelAdmin):
     list_display = (
         'patient_name', 'patient_location', 'treatment_for', 
-        'rating', 'is_featured', 'is_approved', 'created_at'
+        'rating_stars', 'featured_badge', 'approval_badge', 'created_at'
     )
     list_filter = ('rating', 'is_featured', 'is_approved', 'created_at')
     search_fields = ('patient_name', 'patient_location', 'treatment_for', 'testimonial')
     ordering = ('-created_at',)
+    list_per_page = 20
     
     fieldsets = (
-        ('Patient Information', {
-            'fields': ('patient_name', 'patient_location', 'patient_image')
+        ('👤 Patient Information', {
+            'fields': ('patient_name', 'patient_location', 'patient_image'),
+            'classes': ['tab']
         }),
-        ('Testimonial Details', {
-            'fields': ('treatment_for', 'testimonial', 'rating')
+        ('💬 Testimonial Details', {
+            'fields': ('treatment_for', 'testimonial', 'rating'),
+            'classes': ['tab']
         }),
-        ('Display Settings', {
-            'fields': ('is_featured', 'is_approved')
+        ('⚙️ Display Settings', {
+            'fields': ('is_featured', 'is_approved'),
+            'classes': ['tab']
         }),
     )
     
     actions = ['approve_testimonials', 'feature_testimonials', 'unfeature_testimonials']
     
+    @display(description='Rating', ordering='rating')
+    def rating_stars(self, obj):
+        stars = '⭐' * obj.rating
+        return format_html(
+            '<span style="background-color: #f59e0b; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">{}</span>',
+            stars
+        )
+    
+    @display(description='Featured', ordering='is_featured')
+    def featured_badge(self, obj):
+        if obj.is_featured:
+            return format_html(
+                '<span style="background-color: #f59e0b; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">⭐ Featured</span>'
+            )
+        return format_html('<span style="color: #6b7280;">➖</span>')
+    
+    @display(description='Approval', ordering='is_approved')
+    def approval_badge(self, obj):
+        if obj.is_approved:
+            return format_html(
+                '<span style="background-color: #10b981; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">✅ Approved</span>'
+            )
+        return format_html(
+            '<span style="background-color: #ef4444; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">⏳ Pending</span>'
+        )
+    
+    @admin.action(description='✅ Approve Testimonials')
     def approve_testimonials(self, request, queryset):
         updated = queryset.update(is_approved=True)
-        self.message_user(request, f'{updated} testimonials approved.')
-    approve_testimonials.short_description = 'Approve selected testimonials'
+        self.message_user(request, f'✅ {updated} testimonials approved.')
     
+    @admin.action(description='⭐ Feature on Homepage')
     def feature_testimonials(self, request, queryset):
         updated = queryset.update(is_featured=True, is_approved=True)
-        self.message_user(request, f'{updated} testimonials featured on homepage.')
-    feature_testimonials.short_description = 'Feature selected testimonials on homepage'
+        self.message_user(request, f'✅ {updated} testimonials featured on homepage.')
     
+    @admin.action(description='➖ Remove from Homepage')
     def unfeature_testimonials(self, request, queryset):
         updated = queryset.update(is_featured=False)
-        self.message_user(request, f'{updated} testimonials removed from homepage.')
-    unfeature_testimonials.short_description = 'Remove from homepage'
+        self.message_user(request, f'✅ {updated} testimonials removed from homepage.')
 
 
 @admin.register(PaymentSettings)
-class PaymentSettingsAdmin(admin.ModelAdmin):
+class PaymentSettingsAdmin(ModelAdmin):
     fieldsets = (
-        ('Payment Gateway', {
-            'fields': ('gateway', 'is_enabled', 'is_test_mode')
+        ('💳 Payment Gateway', {
+            'fields': ('gateway', 'is_enabled', 'is_test_mode'),
+            'classes': ['tab']
         }),
-        ('Razorpay Configuration', {
+        ('🔐 Razorpay Configuration', {
             'fields': ('razorpay_key_id', 'razorpay_key_secret'),
-            'description': 'Enter your Razorpay API credentials'
+            'description': 'Enter your Razorpay API credentials',
+            'classes': ['tab']
         }),
-        ('Payment Configuration', {
+        ('⚙️ Payment Configuration', {
             'fields': (
                 'currency', 'minimum_amount', 
                 'convenience_fee_percent', 'convenience_fee_fixed'
-            )
+            ),
+            'classes': ['tab']
         }),
-        ('Payment Methods', {
+        ('💰 Payment Methods', {
             'fields': (
                 'enable_netbanking', 'enable_cards', 'enable_wallets', 
                 'enable_upi', 'enable_emi'
             ),
-            'classes': ('collapse',)
+            'classes': ['tab']
         }),
-        ('URLs & Webhooks', {
+        ('🔗 URLs & Webhooks', {
             'fields': (
                 'webhook_url', 'success_url', 'failure_url'
             ),
-            'classes': ('collapse',)
+            'classes': ['tab']
         }),
-        ('Business Information', {
+        ('🏢 Business Information', {
             'fields': (
                 'business_name', 'business_logo', 'terms_url', 'privacy_url'
             ),
-            'classes': ('collapse',)
+            'classes': ['tab']
         }),
     )
     
@@ -151,25 +190,38 @@ class PaymentSettingsAdmin(admin.ModelAdmin):
 
 
 @admin.register(CustomPage)
-class CustomPageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'is_active', 'order', 'created_at')
+class CustomPageAdmin(ModelAdmin):
+    list_display = ('name', 'slug', 'active_badge', 'order', 'created_at')
     list_filter = ('is_active', 'created_at')
     search_fields = ('name', 'slug', 'content')
     prepopulated_fields = {'slug': ('name',)}
     ordering = ['order', 'name']
+    list_per_page = 20
     
     fieldsets = (
-        ('Page Information', {
-            'fields': ('name', 'slug', 'content')
+        ('📄 Page Information', {
+            'fields': ('name', 'slug', 'content'),
+            'classes': ['tab']
         }),
-        ('SEO Settings', {
+        ('🔍 SEO Settings', {
             'fields': ('meta_title', 'meta_description'),
-            'classes': ('collapse',)
+            'classes': ['tab']
         }),
-        ('Display Settings', {
-            'fields': ('is_active', 'order')
+        ('⚙️ Display Settings', {
+            'fields': ('is_active', 'order'),
+            'classes': ['tab']
         }),
     )
+    
+    @display(description='Active', ordering='is_active')
+    def active_badge(self, obj):
+        if obj.is_active:
+            return format_html(
+                '<span style="background-color: #10b981; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">✅ Active</span>'
+            )
+        return format_html(
+            '<span style="background-color: #6b7280; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">❌ Inactive</span>'
+        )
     
     def save_model(self, request, obj, form, change):
         if not obj.meta_title:

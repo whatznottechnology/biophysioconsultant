@@ -2,35 +2,68 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils import timezone
+from unfold.admin import ModelAdmin
+from unfold.decorators import display
 from .models import Service, Booking, PrescriptionUpload
 
 @admin.register(Service)
-class ServiceAdmin(admin.ModelAdmin):
+class ServiceAdmin(ModelAdmin):
     list_display = (
-        'name', 'price', 'duration_minutes', 'requires_prescription', 
-        'is_active', 'created_at'
+        'name', 'price_display', 'duration_minutes', 'prescription_badge', 
+        'active_status', 'created_at'
     )
     list_filter = ('is_active', 'requires_prescription', 'created_at')
     search_fields = ('name', 'description')
     ordering = ('name',)
+    list_per_page = 20
     
     fieldsets = (
-        ('Service Information', {
-            'fields': ('name', 'description', 'duration_minutes')
+        ('💊 Service Information', {
+            'fields': ('name', 'description', 'duration_minutes'),
+            'classes': ['tab']
         }),
-        ('Pricing & Requirements', {
-            'fields': ('price', 'requires_prescription')
+        ('💰 Pricing & Requirements', {
+            'fields': ('price', 'requires_prescription'),
+            'classes': ['tab']
         }),
-        ('Status', {
-            'fields': ('is_active',)
+        ('✅ Status', {
+            'fields': ('is_active',),
+            'classes': ['tab']
         }),
     )
+    
+    @display(description='Price')
+    def price_display(self, obj):
+        return format_html(
+            '<span style="color: #10b981; font-weight: 600; font-size: 14px;">₹{}</span>',
+            obj.price
+        )
+    
+    @display(description='Prescription', ordering='requires_prescription')
+    def prescription_badge(self, obj):
+        if obj.requires_prescription:
+            return format_html(
+                '<span style="background-color: #f59e0b; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">📋 Required</span>'
+            )
+        return format_html(
+            '<span style="background-color: #6b7280; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">➖ Not Required</span>'
+        )
+    
+    @display(description='Status', ordering='is_active')
+    def active_status(self, obj):
+        if obj.is_active:
+            return format_html(
+                '<span style="background-color: #10b981; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">✅ Active</span>'
+            )
+        return format_html(
+            '<span style="background-color: #ef4444; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">❌ Inactive</span>'
+        )
 
 @admin.register(Booking)
-class BookingAdmin(admin.ModelAdmin):
+class BookingAdmin(ModelAdmin):
     list_display = (
         'booking_id_short', 'patient_name', 'service', 'appointment_date', 
-        'appointment_time', 'status', 'payment_status', 'created_at'
+        'appointment_time', 'status_badge', 'payment_badge', 'created_at'
     )
     
     list_filter = (
@@ -44,72 +77,126 @@ class BookingAdmin(admin.ModelAdmin):
     )
     
     ordering = ('-appointment_date', '-appointment_time')
+    list_per_page = 25
+    date_hierarchy = 'appointment_date'
     
     readonly_fields = ('booking_id', 'created_at', 'updated_at')
     
     fieldsets = (
-        ('Booking Information', {
+        ('📅 Booking Information', {
             'fields': (
                 'booking_id', 'patient', 'service', 'appointment_date', 
                 'appointment_time', 'duration_minutes'
-            )
+            ),
+            'classes': ['tab']
         }),
-        ('Patient Details', {
+        ('👤 Patient Details', {
             'fields': (
                 'patient_name', 'patient_age', 'patient_gender', 
                 'patient_phone', 'patient_whatsapp'
-            )
+            ),
+            'classes': ['tab']
         }),
-        ('Health Information', {
-            'fields': ('present_complaints', 'medical_history')
+        ('🏥 Health Information', {
+            'fields': ('present_complaints', 'medical_history'),
+            'classes': ['tab']
         }),
-        ('Status & Payment', {
+        ('💳 Status & Payment', {
             'fields': (
                 'status', 'payment_status', 'payment_amount', 'payment_id'
-            )
+            ),
+            'classes': ['tab']
         }),
-        ('Admin Notes', {
-            'fields': ('admin_notes',)
+        ('📝 Admin Notes', {
+            'fields': ('admin_notes',),
+            'classes': ['tab']
         }),
-        ('Timestamps', {
+        ('🕐 Timestamps', {
             'fields': ('created_at', 'updated_at', 'confirmed_at', 'completed_at'),
-            'classes': ('collapse',)
+            'classes': ['collapse']
         }),
     )
     
     actions = ['mark_as_confirmed', 'mark_as_completed', 'mark_as_cancelled']
     
+    @display(description='Booking ID')
     def booking_id_short(self, obj):
-        return str(obj.booking_id)[:8] + '...'
-    booking_id_short.short_description = 'Booking ID'
+        return format_html(
+            '<span style="font-family: monospace; background-color: #f3f4f6; padding: 4px 8px; border-radius: 6px; font-size: 11px;">{}</span>',
+            str(obj.booking_id)[:12] + '...'
+        )
     
+    @display(description='Status', ordering='status')
+    def status_badge(self, obj):
+        colors = {
+            'pending': '#f59e0b',    # orange
+            'confirmed': '#3b82f6',  # blue
+            'completed': '#10b981',  # green
+            'cancelled': '#ef4444',  # red
+            'no_show': '#6b7280',    # gray
+        }
+        icons = {
+            'pending': '⏳',
+            'confirmed': '✅',
+            'completed': '🎉',
+            'cancelled': '❌',
+            'no_show': '🚫',
+        }
+        color = colors.get(obj.status, '#6b7280')
+        icon = icons.get(obj.status, '📄')
+        return format_html(
+            '<span style="background-color: {}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">{} {}</span>',
+            color, icon, obj.get_status_display()
+        )
+    
+    @display(description='Payment', ordering='payment_status')
+    def payment_badge(self, obj):
+        colors = {
+            'pending': '#f59e0b',    # orange
+            'completed': '#10b981',  # green
+            'failed': '#ef4444',     # red
+            'refunded': '#8b5cf6',   # purple
+        }
+        icons = {
+            'pending': '⏳',
+            'completed': '💰',
+            'failed': '❌',
+            'refunded': '↩️',
+        }
+        color = colors.get(obj.payment_status, '#6b7280')
+        icon = icons.get(obj.payment_status, '💳')
+        return format_html(
+            '<span style="background-color: {}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">{} {}</span>',
+            color, icon, obj.get_payment_status_display()
+        )
+    
+    @admin.action(description='✅ Mark as Confirmed')
     def mark_as_confirmed(self, request, queryset):
         updated = 0
         for booking in queryset:
             if booking.status == 'pending':
                 booking.confirm_booking()
                 updated += 1
-        self.message_user(request, f'{updated} bookings marked as confirmed.')
-    mark_as_confirmed.short_description = 'Mark selected bookings as confirmed'
+        self.message_user(request, f'✅ {updated} bookings marked as confirmed.')
     
+    @admin.action(description='🎉 Mark as Completed')
     def mark_as_completed(self, request, queryset):
         updated = 0
         for booking in queryset:
             if booking.status in ['pending', 'confirmed']:
                 booking.complete_booking()
                 updated += 1
-        self.message_user(request, f'{updated} bookings marked as completed.')
-    mark_as_completed.short_description = 'Mark selected bookings as completed'
+        self.message_user(request, f'✅ {updated} bookings marked as completed.')
     
+    @admin.action(description='❌ Cancel Bookings')
     def mark_as_cancelled(self, request, queryset):
         updated = queryset.filter(
             status__in=['pending', 'confirmed']
         ).update(status='cancelled')
-        self.message_user(request, f'{updated} bookings cancelled.')
-    mark_as_cancelled.short_description = 'Cancel selected bookings'
+        self.message_user(request, f'✅ {updated} bookings cancelled.')
 
 @admin.register(PrescriptionUpload)
-class PrescriptionUploadAdmin(admin.ModelAdmin):
+class PrescriptionUploadAdmin(ModelAdmin):
     list_display = (
         'patient_name', 'booking_appointment', 'file_name', 
         'file_size_mb', 'uploaded_at'

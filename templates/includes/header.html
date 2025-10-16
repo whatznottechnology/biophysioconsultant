@@ -4,7 +4,11 @@
         <!-- Logo and Brand -->
         <div class="flex items-center">
             <a href="{% url 'home' %}" class="flex items-center">
-                <img src="{% static 'images/loogoo.png' %}" alt="Bio-Physio Consultant" class="h-10 w-10 mr-3 object-contain">
+                {% if site_settings.site_logo %}
+                    <img src="{{ site_settings.site_logo.url }}" alt="{{ site_settings.site_name|default:'Bio-Physio Consultant' }}" class="h-10 w-10 mr-3 object-contain">
+                {% else %}
+                    <img src="{% static 'images/loogoo.png' %}" alt="Bio-Physio Consultant" class="h-10 w-10 mr-3 object-contain">
+                {% endif %}
                 <div class="hidden sm:block">
                     <h1 class="text-lg font-bold text-gray-900">{{ site_settings.site_name|default:"Bio-Physio Consultant" }}</h1>
                     <p class="text-xs text-gray-600">{{ site_settings.site_tagline|default:"Holistic Health & Physiotherapy" }}</p>

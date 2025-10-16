@@ -4,14 +4,14 @@ from django.utils import timezone
 
 class JobOpening(models.Model):
     """
-    Job openings and career opportunities
+    Training batches and career opportunities
     """
     JOB_TYPE_CHOICES = [
-        ('full_time', 'Full Time'),
-        ('part_time', 'Part Time'),
-        ('contract', 'Contract'),
-        ('internship', 'Internship'),
-        ('volunteer', 'Volunteer'),
+        ('full_time', 'Exercise Therapy'),
+        ('part_time', 'Magnet Therapy'),
+        ('contract', 'Massage Therapy'),
+        ('internship', 'Physiotherapy'),
+        ('volunteer', 'Acupressure'),
     ]
     
     title = models.CharField(max_length=200)
@@ -23,7 +23,8 @@ class JobOpening(models.Model):
     job_type = models.CharField(
         max_length=20, 
         choices=JOB_TYPE_CHOICES, 
-        default='full_time'
+        default='full_time',
+        verbose_name="Clinical Training"
     )
     
     location = models.CharField(max_length=200)
@@ -32,7 +33,8 @@ class JobOpening(models.Model):
         decimal_places=2, 
         blank=True, 
         null=True,
-        help_text="Minimum salary in INR"
+        help_text="Minimum tuition fees in INR",
+        verbose_name="Tuition Fees (Min)"
     )
     
     salary_max = models.DecimalField(
@@ -40,7 +42,8 @@ class JobOpening(models.Model):
         decimal_places=2, 
         blank=True, 
         null=True,
-        help_text="Maximum salary in INR"
+        help_text="Maximum tuition fees in INR",
+        verbose_name="Tuition Fees (Max)"
     )
     
     is_active = models.BooleanField(default=True)
@@ -50,8 +53,8 @@ class JobOpening(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        verbose_name = "Job Opening"
-        verbose_name_plural = "Job Openings"
+        verbose_name = "New Batch"
+        verbose_name_plural = "New Batches"
         ordering = ['-created_at']
     
     def __str__(self):
@@ -66,16 +69,16 @@ class JobOpening(models.Model):
     
     @property
     def salary_range(self):
-        """Return formatted salary range"""
+        """Return formatted tuition fees range"""
         if self.salary_min and self.salary_max:
             return f"₹{self.salary_min:,.0f} - ₹{self.salary_max:,.0f}"
         elif self.salary_min:
             return f"₹{self.salary_min:,.0f}+"
-        return "Salary not specified"
+        return "Tuition fees not specified"
 
 class JobApplication(models.Model):
     """
-    Simplified job applications from candidates
+    Training applications from candidates
     """
     STATUS_CHOICES = [
         ('submitted', 'Submitted'),
@@ -136,8 +139,8 @@ class JobApplication(models.Model):
     reviewed_at = models.DateTimeField(blank=True, null=True)
     
     class Meta:
-        verbose_name = "Job Application"
-        verbose_name_plural = "Job Applications"
+        verbose_name = "Training Application"
+        verbose_name_plural = "Training Applications"
         ordering = ['-submitted_at']
         unique_together = ['job_opening', 'email']
     

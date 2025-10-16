@@ -5,28 +5,12 @@
 
 {% block content %}
 
-<!-- Career Hero Section -->
-<section class="bg-gradient-to-br from-blue-50 to-green-50 py-16">
-    <div class="container mx-auto px-4 text-center">
-        <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Join Our Healthcare Team</h1>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Build your career in healthcare with opportunities for growth, learning, and making a difference in people's
-            lives
-        </p>
-        <div class="flex items-center justify-center space-x-2 text-green-600">
-            <i class="fas fa-briefcase"></i>
-            <span class="font-semibold">{{ job_openings.count }} Active Job{{ job_openings.count|pluralize }}
-                Available</span>
-        </div>
-    </div>
-</section>
-
-<!-- Job Cards Section -->
+<!-- New Batch Section -->
 <section class="py-16 bg-white" id="job-openings">
     <div class="container mx-auto px-4">
         <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">Physiotherapy Practical Training Opportunity</h2>
-            <p class="text-xl text-gray-600">Join our training program to enhance your skills</p>
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Physiotherapy Practical Training Class</h2>
+            <p class="text-xl text-gray-600">New Batches Available</p>
         </div>
 
         {% if job_openings %}
@@ -35,7 +19,7 @@
             <div class="bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
                 onclick="openJobModal({{ job.id }})">
 
-                <!-- Job Card Header -->
+                <!-- Batch Card Header -->
                 <div class="bg-gradient-to-r from-green-500 to-blue-500 text-white p-6 rounded-t-xl">
                     <div class="flex justify-between items-start mb-3">
                         <h3 class="text-xl font-bold leading-tight">{{ job.title }}</h3>
@@ -62,8 +46,8 @@
                     <div class="space-y-3 mb-6">
                         {% if job.salary_min and job.salary_max %}
                         <div class="flex items-center text-sm text-gray-700">
-                            <i class="fas fa-rupee-sign text-green-500 w-4 mr-3"></i>
-                            <span>₹{{ job.salary_min|floatformat:0 }} - ₹{{ job.salary_max|floatformat:0 }}</span>
+                            <i class="fas fa-money-bill-wave text-green-500 w-4 mr-3"></i>
+                            <span>Tuition Fees: {{ job.salary_min|floatformat:0 }} - {{ job.salary_max|floatformat:0 }}</span>
                         </div>
                         {% endif %}
 
@@ -91,11 +75,11 @@
             {% endfor %}
         </div>
         {% else %}
-        <!-- No Jobs Available -->
+        <!-- No Batches Available -->
         <div class="text-center py-16">
             <i class="fas fa-briefcase text-6xl text-gray-300 mb-4"></i>
-            <h3 class="text-2xl font-medium text-gray-900 mb-2">No Openings Currently</h3>
-            <p class="text-gray-600 mb-6">We don't have any job openings at the moment, but we're always looking for
+            <h3 class="text-2xl font-medium text-gray-900 mb-2">No Batches Currently</h3>
+            <p class="text-gray-600 mb-6">We don't have any new batches at the moment, but we're always looking for
                 talented individuals.</p>
             <a href="{% url 'contact:contact' %}"
                 class="inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
@@ -106,14 +90,14 @@
     </div>
 </section>
 
-<!-- Job Application Modal -->
+<!-- Training Application Modal -->
 <div id="jobModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <!-- Modal Header -->
         <div class="bg-gradient-to-r from-green-500 to-blue-500 text-white p-6 rounded-t-xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h3 class="text-2xl font-bold" id="modalJobTitle">Job Title</h3>
+                    <h3 class="text-2xl font-bold" id="modalJobTitle">Training Program</h3>
                     <p class="text-sm opacity-90" id="modalJobLocation">Location</p>
                 </div>
                 <button onclick="closeJobModal()" class="text-white hover:text-gray-200 transition-colors">
@@ -124,10 +108,10 @@
 
         <!-- Modal Body -->
         <div class="p-6">
-            <!-- Job Details -->
+            <!-- Training Details -->
             <div class="mb-8">
-                <h4 class="font-semibold text-gray-900 mb-2">Job Description:</h4>
-                <p class="text-gray-700 mb-4" id="modalJobDescription">Job description will appear here</p>
+                <h4 class="font-semibold text-gray-900 mb-2">Program Description:</h4>
+                <p class="text-gray-700 mb-4" id="modalJobDescription">Program description will appear here</p>
 
                 <h4 class="font-semibold text-gray-900 mb-2">Requirements:</h4>
                 <div class="text-gray-700 whitespace-pre-line" id="modalJobRequirements">Requirements will appear here
@@ -135,11 +119,11 @@
 
                 <div class="grid grid-cols-1 gap-4 mt-4 p-4 bg-gray-50 rounded-lg">
                     <div class="text-sm">
-                        <span class="text-gray-600">Job Type:</span>
+                        <span class="text-gray-600">Clinical Training:</span>
                         <span class="font-medium text-gray-900" id="modalJobType">-</span>
                     </div>
                     <div class="text-sm" id="modalSalaryDiv" style="display: none;">
-                        <span class="text-gray-600">Salary:</span>
+                        <span class="text-gray-600">Tuition Fees:</span>
                         <span class="font-medium text-gray-900" id="modalJobSalary">-</span>
                     </div>
                 </div>
@@ -147,7 +131,7 @@
 
             <!-- Application Form -->
             <div class="border-t pt-6">
-                <h4 class="text-xl font-semibold text-gray-900 mb-6">Apply for this Position</h4>
+                <h4 class="text-xl font-semibold text-gray-900 mb-6">Apply for this Training</h4>
 
                 <form id="jobApplicationForm" class="space-y-4">
                     {% csrf_token %}
@@ -314,19 +298,19 @@
 <!-- CTA Section -->
 <section class="py-16 bg-gray-900 text-white">
     <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3xl font-bold mb-6">Ready to Start Your Healthcare Career?</h2>
+        <h2 class="text-3xl font-bold mb-6">Ready to Start Your Training Journey?</h2>
         <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join our mission to provide exceptional healthcare services to our community
+            Join our training program and enhance your physiotherapy skills
         </p>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="#job-openings"
                 class="bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors">
-                View Job Openings
+                View New Batches
             </a>
             <a href="{% url 'contact:contact' %}"
                 class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-gray-900 transition-colors">
-                Contact HR
+                Contact Us
             </a>
         </div>
     </div>
@@ -366,11 +350,11 @@
             document.getElementById('modalJobType').textContent = job.job_type || 'Not specified';
             document.getElementById('jobId').value = jobId;
 
-            // Handle salary display
+            // Handle tuition fees display
             const salaryDiv = document.getElementById('modalSalaryDiv');
             const salarySpan = document.getElementById('modalJobSalary');
             if (job.salary_min && job.salary_max) {
-                salarySpan.textContent = `₹${job.salary_min} - ₹${job.salary_max}`;
+                salarySpan.textContent = `${job.salary_min} - ${job.salary_max}`;
                 salaryDiv.style.display = 'block';
             } else {
                 salaryDiv.style.display = 'none';
@@ -381,7 +365,7 @@
             document.body.style.overflow = 'hidden';
         } catch (error) {
             console.error('Error opening modal:', error);
-            alert('Error opening job details. Please try again.');
+            alert('Error opening training details. Please try again.');
         }
     }
 

@@ -7,11 +7,25 @@ Healthcare Booking System for Bio-Physio Consultant - Physiotherapy & Alternativ
 from pathlib import Path
 import environ
 import os
+from django.templatetags.static import static
+from django.urls import reverse_lazy
 
 # Initialize environment variables
 env = environ.Env(
     DEBUG=(bool, False)
 )
+
+# Helper function for logo
+def get_site_logo_or_fallback(request):
+    """Get site logo from settings or return fallback logo"""
+    try:
+        from site_settings.models import SiteSettings
+        settings = SiteSettings.get_settings()
+        if settings.site_logo:
+            return request.build_absolute_uri(settings.site_logo.url)
+    except:
+        pass
+    return static("images/loogoo.png")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,6 +48,10 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 # Application definition
 
 INSTALLED_APPS = [
+    'unfold',  # Django Unfold - before django.contrib.admin
+    'unfold.contrib.filters',  # optional, if special filters are used
+    'unfold.contrib.forms',  # optional, if special form elements are used
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -270,3 +288,168 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+
+# Django Unfold Configuration
+UNFOLD = {
+    "SITE_TITLE": "Bio-Physio Consultant",
+    "SITE_HEADER": "Bio-Physio Admin",
+    "SITE_URL": "/",
+    "SITE_ICON": lambda request: get_site_logo_or_fallback(request),
+    "SITE_LOGO": lambda request: get_site_logo_or_fallback(request),
+    "SITE_SYMBOL": "favorite",  # Symbol from Material Design Icons
+    "SHOW_HISTORY": True,  # Show history button
+    "SHOW_VIEW_ON_SITE": True,  # Show view on site button
+    "ENVIRONMENT": "healthcare_booking.utils.environment_callback",
+    "DASHBOARD_CALLBACK": "healthcare_booking.utils.dashboard_callback",
+    "LOGIN": {
+        "image": lambda request: static("images/login-bg.jpg"),  # Login page background
+        "redirect_after": lambda request: reverse_lazy("admin:index"),
+    },
+    "STYLES": [
+        lambda request: static("css/custom_admin.css"),
+    ],
+    "SCRIPTS": [
+        lambda request: static("js/custom_admin.js"),
+    ],
+    "COLORS": {
+        "primary": {
+            "50": "249 250 251",
+            "100": "243 244 246",
+            "200": "229 231 235",
+            "300": "209 213 219",
+            "400": "156 163 175",
+            "500": "107 114 128",
+            "600": "75 85 99",
+            "700": "55 65 81",
+            "800": "31 41 55",
+            "900": "17 24 39",
+            "950": "3 7 18",
+        },
+    },
+    "EXTENSIONS": {
+        "modeltranslation": {
+            "flags": {
+                "en": "🇬🇧",
+                "fr": "🇫🇷",
+                "nl": "🇧🇪",
+            },
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,  # Search in sidebar
+        "show_all_applications": True,  # Show all applications in sidebar
+        "navigation_expanded": True,  # Keep navigation expanded by default
+        "navigation": [
+            {
+                "title": "Dashboard",
+                "separator": False,
+                "items": [
+                    {
+                        "title": "Dashboard",
+                        "icon": "dashboard",
+                        "link": lambda request: reverse_lazy("admin:index"),
+                    },
+                ],
+            },
+            {
+                "title": "Bookings & Patients",
+                "separator": True,
+                "collapsible": False,
+                "items": [
+                    {
+                        "title": "Bookings",
+                        "icon": "calendar_month",
+                        "link": lambda request: reverse_lazy("admin:bookings_booking_changelist"),
+                    },
+                    {
+                        "title": "Services",
+                        "icon": "medical_services",
+                        "link": lambda request: reverse_lazy("admin:bookings_service_changelist"),
+                    },
+                    {
+                        "title": "Users",
+                        "icon": "group",
+                        "link": lambda request: reverse_lazy("admin:accounts_user_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Training & Career",
+                "separator": True,
+                "collapsible": False,
+                "items": [
+                    {
+                        "title": "New Batches",
+                        "icon": "school",
+                        "link": lambda request: reverse_lazy("admin:career_jobopening_changelist"),
+                    },
+                    {
+                        "title": "Training Applications",
+                        "icon": "description",
+                        "link": lambda request: reverse_lazy("admin:career_jobapplication_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Contact Messages",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Contact Messages",
+                        "icon": "mail",
+                        "link": lambda request: reverse_lazy("admin:contact_contactmessage_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Content Management",
+                "separator": True,
+                "collapsible": False,
+                "items": [
+                    {
+                        "title": "Blog Posts",
+                        "icon": "article",
+                        "link": lambda request: reverse_lazy("admin:blog_blogpost_changelist"),
+                    },
+                    {
+                        "title": "Clinic Info",
+                        "icon": "business",
+                        "link": lambda request: reverse_lazy("admin:contact_clinicinfo_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Site Settings",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Site Settings",
+                        "icon": "settings",
+                        "link": lambda request: reverse_lazy("admin:site_settings_sitesettings_changelist"),
+                    },
+                ],
+            },
+        ],
+    },
+    "TABS": [
+        {
+            "models": [
+                "bookings.booking",
+            ],
+            "items": [
+                {
+                    "title": "All Bookings",
+                    "link": lambda request: reverse_lazy("admin:bookings_booking_changelist"),
+                },
+                {
+                    "title": "Pending",
+                    "link": lambda request: reverse_lazy("admin:bookings_booking_changelist") + "?status__exact=pending",
+                },
+                {
+                    "title": "Confirmed",
+                    "link": lambda request: reverse_lazy("admin:bookings_booking_changelist") + "?status__exact=confirmed",
+                },
+            ],
+        },
+    ],
+}

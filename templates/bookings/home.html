@@ -40,7 +40,7 @@
                 
                 <!-- Description -->
                 <p class="text-base md:text-lg lg:text-xl mb-8 opacity-90 max-w-2xl mx-auto lg:mx-0">
-                    Expert care in physiotherapy, acupressure, massage therapy, and alternative medicine for complete wellness.
+                    Expert care in Physiotherapy, Acupressure Therapy, Massage Therapy, Magnet Therapy, Cupping Therapy and Alternative Medicine like Biochemic System of Medicine for the wellness.
                 </p>
                 
                 <!-- CTA Buttons -->
@@ -317,26 +317,32 @@
         <!-- Contact Info -->
         <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {% if site_settings.contact_phone %}
-            <div class="text-center">
-                <i class="fas fa-phone text-3xl mb-3"></i>
-                <h3 class="text-lg font-semibold mb-2">Call Us</h3>
-                <p class="opacity-90">{{ site_settings.contact_phone }}</p>
-            </div>
+            <a href="tel:{{ site_settings.contact_phone }}" class="text-center block group">
+                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 hover:bg-opacity-20 transition-all cursor-pointer">
+                    <i class="fas fa-phone text-3xl mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h3 class="text-lg font-semibold mb-2">Call Us</h3>
+                    <p class="opacity-90">{{ site_settings.contact_phone }}</p>
+                </div>
+            </a>
             {% endif %}
             
             {% if site_settings.contact_email %}
-            <div class="text-center">
-                <i class="fas fa-envelope text-3xl mb-3"></i>
-                <h3 class="text-lg font-semibold mb-2">Email Us</h3>
-                <p class="opacity-90">{{ site_settings.contact_email }}</p>
-            </div>
+            <a href="mailto:{{ site_settings.contact_email }}" class="text-center block group">
+                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 hover:bg-opacity-20 transition-all cursor-pointer">
+                    <i class="fas fa-envelope text-3xl mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h3 class="text-lg font-semibold mb-2">Email Us</h3>
+                    <p class="opacity-90">{{ site_settings.contact_email }}</p>
+                </div>
+            </a>
             {% endif %}
             
-            <div class="text-center">
-                <i class="fas fa-clock text-3xl mb-3"></i>
-                <h3 class="text-lg font-semibold mb-2">Consultation Fee</h3>
-                <p class="text-2xl font-bold">₹{{ site_settings.consultation_fee|default:"200.00" }}</p>
-            </div>
+            <a href="{% url 'book_appointment' %}" class="text-center block group">
+                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 hover:bg-opacity-20 transition-all cursor-pointer">
+                    <i class="fas fa-clock text-3xl mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h3 class="text-lg font-semibold mb-2">Consultation Fee</h3>
+                    <p class="text-2xl font-bold">₹{{ site_settings.consultation_fee|default:"200.00" }}</p>
+                </div>
+            </a>
         </div>
     </div>
 </section>
