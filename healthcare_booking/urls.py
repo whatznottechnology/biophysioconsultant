@@ -19,7 +19,6 @@ urlpatterns = [
     
     # App URLs
     path('', include('bookings.urls')),  # Home page and booking
-    path('accounts/', include('accounts.urls')),  # User authentication
     path('blog/', include('blog.urls')),  # Health blog
     path('contact/', include('contact.urls')),  # Contact and clinic info
     path('career/', include('career.urls')),  # Career and training

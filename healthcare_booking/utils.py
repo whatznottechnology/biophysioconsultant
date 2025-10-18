@@ -39,7 +39,6 @@ def dashboard_callback(request, context):
     Callback to add custom dashboard statistics
     """
     from bookings.models import Booking
-    from accounts.models import User
     from career.models import JobOpening, JobApplication
     from contact.models import ContactMessage
     
@@ -71,10 +70,10 @@ def dashboard_callback(request, context):
                         "description": _("Awaiting confirmation"),
                     },
                     {
-                        "title": _("Total Patients"),
-                        "icon": "group",
-                        "value": User.objects.filter(is_active=True).count(),
-                        "description": _("Registered users"),
+                        "title": _("Active Services"),
+                        "icon": "medical_services",
+                        "value": Booking.objects.values('service').distinct().count(),
+                        "description": _("Services with bookings"),
                     },
                 ],
             },

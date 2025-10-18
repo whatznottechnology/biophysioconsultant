@@ -46,53 +46,6 @@
                 Book Now
             </a>
 
-            {% if user.is_authenticated %}
-            <!-- User Dropdown -->
-            <div class="relative" x-data="{ open: false }">
-                <button @click="open = !open" class="flex items-center text-gray-700 hover:text-primary transition-colors">
-                    <div class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center mr-2">
-                        <i class="fas fa-user text-sm"></i>
-                    </div>
-                    <span class="hidden md:block">{{ user.first_name|default:user.username }}</span>
-                    <i class="fas fa-chevron-down ml-1 text-xs"></i>
-                </button>
-                
-                <div x-show="open" @click.away="open = false" 
-                     x-transition:enter="transition ease-out duration-100"
-                     x-transition:enter-start="transform opacity-0 scale-95"
-                     x-transition:enter-end="transform opacity-100 scale-100"
-                     x-transition:leave="transition ease-in duration-75"
-                     x-transition:leave-start="transform opacity-100 scale-100"
-                     x-transition:leave-end="transform opacity-0 scale-95"
-                     class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
-                    
-                    <a href="{% url 'accounts:dashboard' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-                    </a>
-                    <a href="{% url 'my_bookings' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        <i class="fas fa-calendar-check mr-2"></i>My Bookings
-                    </a>
-                    <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        <i class="fas fa-user-edit mr-2"></i>Profile
-                    </a>
-                    <hr class="my-2">
-                    <a href="{% url 'accounts:logout' %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                    </a>
-                </div>
-            </div>
-            {% else %}
-            <!-- Login/Register -->
-            <div class="hidden sm:flex items-center space-x-2">
-                <a href="{% url 'accounts:login' %}" class="text-gray-700 hover:text-primary transition-colors px-3 py-2">
-                    Login
-                </a>
-                <a href="{% url 'accounts:register' %}" class="bg-gray-100 text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-lg transition-colors">
-                    Register
-                </a>
-            </div>
-            {% endif %}
-
             <!-- Mobile Menu Toggle -->
             <button id="mobile-menu-toggle" class="lg:hidden text-gray-700 hover:text-primary transition-colors">
                 <i class="fas fa-bars text-xl"></i>
@@ -123,16 +76,6 @@
             <a href="{% url 'contact:contact' %}" class="block text-gray-700 hover:text-primary transition-colors py-2 {% if 'contact' in request.resolver_match.app_name %}text-primary font-medium{% endif %}">
                 <i class="fas fa-envelope mr-3"></i>Contact
             </a>
-            
-            {% if not user.is_authenticated %}
-            <hr class="my-3">
-            <a href="{% url 'accounts:login' %}" class="block text-gray-700 hover:text-primary transition-colors py-2">
-                <i class="fas fa-sign-in-alt mr-3"></i>Login
-            </a>
-            <a href="{% url 'accounts:register' %}" class="block text-gray-700 hover:text-primary transition-colors py-2">
-                <i class="fas fa-user-plus mr-3"></i>Register
-            </a>
-            {% endif %}
         </nav>
         
         <!-- Mobile Book Button -->
@@ -144,6 +87,3 @@
         </div>
     </div>
 </div>
-
-<!-- Alpine.js for dropdown functionality -->
-<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>

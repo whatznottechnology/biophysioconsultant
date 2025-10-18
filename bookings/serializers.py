@@ -9,7 +9,7 @@ class ServiceSerializer(serializers.ModelSerializer):
         model = Service
         fields = [
             'id', 'name', 'description', 'duration_minutes', 
-            'price', 'requires_prescription', 'created_at'
+            'price', 'created_at'
         ]
 
 class PrescriptionUploadSerializer(serializers.ModelSerializer):
@@ -36,7 +36,6 @@ class BookingSerializer(serializers.ModelSerializer):
     """
     service_name = serializers.CharField(source='service.name', read_only=True)
     service_price = serializers.DecimalField(source='service.price', max_digits=10, decimal_places=2, read_only=True)
-    patient_name_display = serializers.CharField(source='patient.get_display_name', read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     payment_status_display = serializers.CharField(source='get_payment_status_display', read_only=True)
     prescriptions = PrescriptionUploadSerializer(many=True, read_only=True)
@@ -57,13 +56,11 @@ class BookingSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at', 'confirmed_at', 'completed_at'
         ]
         read_only_fields = [
-            'booking_id', 'patient', 'status', 'payment_status', 
+            'booking_id', 'status', 'payment_status', 
             'payment_id', 'created_at', 'updated_at', 'confirmed_at', 'completed_at'
         ]
     
     def create(self, validated_data):
-        # Set the patient from the request user
-        validated_data['patient'] = self.context['request'].user
         return super().create(validated_data)
 
 class BookingCreateSerializer(serializers.ModelSerializer):
@@ -99,9 +96,6 @@ class BookingCreateSerializer(serializers.ModelSerializer):
         return data
     
     def create(self, validated_data):
-        # Set the patient from the request user
-        validated_data['patient'] = self.context['request'].user
-        
         # Set payment amount from service
         service = validated_data['service']
         validated_data['payment_amount'] = service.price

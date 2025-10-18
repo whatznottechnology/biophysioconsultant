@@ -95,12 +95,6 @@
                     <i class="fas fa-id-card text-blue-600 mr-2 mt-0.5"></i>
                     Bring a valid ID and any relevant medical documents
                 </li>
-                {% if booking.service.requires_prescription and booking.prescription %}
-                <li class="flex items-start">
-                    <i class="fas fa-prescription-bottle text-blue-600 mr-2 mt-0.5"></i>
-                    Your prescription has been uploaded and reviewed
-                </li>
-                {% endif %}
                 <li class="flex items-start">
                     <i class="fas fa-phone text-blue-600 mr-2 mt-0.5"></i>
                     Contact us at {{ clinic_info.phone_primary }} if you need to reschedule

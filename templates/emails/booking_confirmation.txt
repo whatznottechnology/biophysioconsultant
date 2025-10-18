@@ -1,0 +1,69 @@
+BOOKING CONFIRMATION - {{ booking.booking_id }}
+{{ site_settings.site_name|default:"Bio-Physio Consultant" }}
+
+Dear {{ booking.patient_name }},
+
+Your appointment has been successfully booked! Here are your booking details:
+
+APPOINTMENT DETAILS
+==================
+Booking ID: {{ booking.booking_id }}
+Service: {{ booking.service.name }}
+Date: {{ booking.appointment_date|date:"l, F j, Y" }}
+Time: {{ booking.appointment_time|time:"g:i A" }}
+Duration: {{ booking.service.duration_minutes }} minutes
+
+PATIENT INFORMATION
+===================
+Name: {{ booking.patient_name }}
+Phone: {{ booking.patient_phone }}
+Email: {{ booking.patient_email }}
+{% if booking.symptoms %}
+Symptoms: {{ booking.symptoms }}
+{% endif %}
+
+PAYMENT DETAILS
+===============
+Service Fee: ₹{{ booking.service.price }}
+Payment Method: {% if booking.payment_id %}Online Payment (Razorpay){% else %}Pay at Clinic{% endif %}
+Payment Status: {% if booking.payment_status == 'paid' %}Paid{% elif booking.payment_status == 'pending' %}Pending{% else %}{{ booking.get_payment_status_display }}{% endif %}
+{% if booking.payment_id %}
+Transaction ID: {{ booking.payment_id }}
+{% endif %}
+
+IMPORTANT INSTRUCTIONS
+======================
+- Please arrive 10-15 minutes before your appointment time
+- Bring any relevant medical reports or previous prescriptions
+- Carry a valid ID proof for verification
+{% if booking.payment_status == 'pending' %}
+- Please complete the payment at the clinic reception
+{% endif %}
+- In case of emergency or if you need to reschedule, please contact us immediately
+
+CLINIC INFORMATION
+==================
+{% if site_settings.contact_phone %}
+Phone: {{ site_settings.contact_phone }}
+{% endif %}
+{% if site_settings.contact_email %}
+Email: {{ site_settings.contact_email }}
+{% endif %}
+{% if site_settings.contact_address %}
+Address:
+{{ site_settings.contact_address }}
+{% endif %}
+
+Thank you for choosing {{ site_settings.site_name|default:"Bio-Physio Consultant" }} for your healthcare needs.
+
+For any queries, please contact us using the information above.
+
+This is an automated email. Please do not reply to this message.
+
+Booking Reference: {{ booking.booking_id }}
+Generated on: {{ booking.created_at|date:"F j, Y at g:i A" }}
+
+Best regards,
+{{ site_settings.site_name|default:"Bio-Physio Consultant" }}
+Professional Healthcare Services
+Physiotherapy & Alternative Medicine

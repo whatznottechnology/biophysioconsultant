@@ -95,12 +95,6 @@
             <!-- Step 2: Contact Details -->
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-3xl font-bold text-gray-900">Your Contact Details</h2>
-                {% if not user.is_authenticated %}
-                <a href="{% url 'accounts:login' %}?next={% url 'multistep_booking' %}%3Fstep=2" 
-                   class="text-sm text-green-600 hover:text-green-700 font-medium">
-                    Already have an account? Login →
-                </a>
-                {% endif %}
             </div>
             
             {% if selected_service %}
@@ -254,74 +248,12 @@
                 </div>
             </div>
             
-            <!-- Account Creation/Login for Non-Logged-In Users -->
-            {% if show_password_field %}
-            <div class="mb-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-400 rounded-lg">
-                <div class="flex items-start mb-4">
-                    <i class="fas fa-exclamation-circle text-blue-600 text-2xl mr-3 mt-1"></i>
-                    <div class="flex-1">
-                        <h3 class="font-bold text-xl text-blue-900 mb-2">Account Required</h3>
-                        <p class="text-sm text-blue-800 mb-3">
-                            Please create an account or login to continue with your booking. This helps us manage your appointments and keep you updated.
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="flex flex-col sm:flex-row gap-4 mb-4">
-                    <a href="{% url 'accounts:login' %}?next={% url 'multistep_booking' %}%3Fstep=4" 
-                       class="flex-1 bg-white border-2 border-blue-500 text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors text-center">
-                        <i class="fas fa-sign-in-alt mr-2"></i>
-                        Login to Existing Account
-                    </a>
-                    <button type="button" onclick="showPasswordField()" id="createAccountBtn"
-                            class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                        <i class="fas fa-user-plus mr-2"></i>
-                        Create New Account
-                    </button>
-                </div>
-                
-                <!-- Password Field (Hidden Initially) -->
-                <div id="passwordSection" class="hidden mt-4 pt-4 border-t border-blue-300">
-                    <h4 class="font-medium text-blue-900 mb-3">Create Your Password</h4>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Password *</label>
-                        <input type="password" name="password" id="password"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                               placeholder="Choose a secure password (min 8 characters)" minlength="8" required>
-                        <p class="mt-2 text-xs text-blue-800">
-                            <i class="fas fa-check-circle mr-1"></i>
-                            Your account will be created with email: <strong>{{ booking_summary.patient_email }}</strong>
-                        </p>
-                        <p class="mt-1 text-xs text-gray-600">
-                            You'll be logged in automatically after creating your account.
-                        </p>
-                    </div>
-                    
-                    <!-- Show payment options after password is entered -->
-                    <div id="proceedSection" class="hidden mt-4">
-                        <button type="button" onclick="enablePaymentOptions()" 
-                                class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
-                            <i class="fas fa-arrow-right mr-2"></i>
-                            Proceed to Payment Options
-                        </button>
-                    </div>
-                </div>
-            </div>
-            {% else %}
-            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center">
-                <i class="fas fa-check-circle text-green-600 text-xl mr-3"></i>
-                <div>
-                    <p class="text-sm font-medium text-green-800">Logged in as: {{ user.email }}</p>
-                </div>
-            </div>
-            {% endif %}
-            
             <form method="post" action="{% url 'multistep_booking' %}" id="paymentForm">
                 {% csrf_token %}
                 <input type="hidden" name="step" value="4">
                 
-                <!-- Payment Method Selection (Disabled until account is created/logged in) -->
-                <div class="mb-6" id="paymentMethodSection" {% if show_password_field %}style="opacity: 0.5; pointer-events: none;"{% endif %}>
+                <!-- Payment Method Selection -->
+                <div class="mb-6" id="paymentMethodSection">
                     <h3 class="font-semibold text-lg mb-4">Select Payment Method</h3>
                     <div class="space-y-3">
                         <label class="relative cursor-pointer">
@@ -369,10 +301,8 @@
                         ← Back
                     </a>
                     <button type="submit" id="confirmBookingBtn"
-                            {% if show_password_field %}disabled{% endif %}
                             class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg 
-                                   hover:bg-green-700 transition-colors shadow-md
-                                   disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                   hover:bg-green-700 transition-colors shadow-md">
                         Confirm Booking
                     </button>
                 </div>
@@ -385,88 +315,7 @@
 </div>
 
 <script>
-// Show password field when Create Account is clicked
-function showPasswordField() {
-    const passwordSection = document.getElementById('passwordSection');
-    const createAccountBtn = document.getElementById('createAccountBtn');
-    
-    if (passwordSection) {
-        passwordSection.classList.remove('hidden');
-        createAccountBtn.classList.add('hidden');
-        
-        // Make password field required
-        const passwordField = document.getElementById('password');
-        if (passwordField) {
-            passwordField.setAttribute('required', 'required');
-            passwordField.focus();
-            
-            // Show proceed button when password has 8+ characters
-            passwordField.addEventListener('input', function() {
-                const proceedSection = document.getElementById('proceedSection');
-                if (this.value.length >= 8 && proceedSection) {
-                    proceedSection.classList.remove('hidden');
-                } else if (proceedSection) {
-                    proceedSection.classList.add('hidden');
-                }
-            });
-        }
-    }
-}
-
-// Enable payment options after account creation intent
-function enablePaymentOptions() {
-    const paymentMethodSection = document.getElementById('paymentMethodSection');
-    const confirmBookingBtn = document.getElementById('confirmBookingBtn');
-    const passwordField = document.getElementById('password');
-    
-    // Validate password
-    if (!passwordField || passwordField.value.length < 8) {
-        alert('Please enter a password of at least 8 characters');
-        return;
-    }
-    
-    // Enable payment section
-    if (paymentMethodSection) {
-        paymentMethodSection.style.opacity = '1';
-        paymentMethodSection.style.pointerEvents = 'auto';
-    }
-    
-    // Enable confirm button
-    if (confirmBookingBtn) {
-        confirmBookingBtn.removeAttribute('disabled');
-    }
-    
-    // Scroll to payment section
-    if (paymentMethodSection) {
-        paymentMethodSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-}
-
-// Password field requirement logic for payment method
-document.addEventListener('DOMContentLoaded', function() {
-    const onlinePayment = document.getElementById('onlinePayment');
-    const cashPayment = document.getElementById('cashPayment');
-    const passwordField = document.getElementById('password');
-    const passwordSection = document.getElementById('passwordSection');
-    
-    if (onlinePayment && passwordField && passwordSection) {
-        // For online payment, require account creation
-        onlinePayment.addEventListener('change', function() {
-            if (this.checked && !passwordSection.classList.contains('hidden')) {
-                passwordField.setAttribute('required', 'required');
-            }
-        });
-        
-        if (cashPayment) {
-            cashPayment.addEventListener('change', function() {
-                if (this.checked && !passwordSection.classList.contains('hidden')) {
-                    // For cash payment, password is still required (user must create account)
-                    passwordField.setAttribute('required', 'required');
-                }
-            });
-        }
-    }
-});
+// No authentication-related JavaScript needed for guest booking
 </script>
 
 {% endblock %}

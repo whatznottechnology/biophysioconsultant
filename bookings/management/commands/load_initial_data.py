@@ -43,57 +43,49 @@ class Command(BaseCommand):
                 'name': 'Acupressure Therapy',
                 'description': 'Traditional acupressure treatment using finger pressure on specific points to promote natural healing and wellness.',
                 'duration_minutes': 45,
-                'price': 200.00,
-                'requires_prescription': False
+                'price': 200.00
             },
             {
                 'name': 'Magnet Therapy',
                 'description': 'Therapeutic use of magnetic fields to stimulate healing and reduce pain and inflammation.',
                 'duration_minutes': 30,
-                'price': 150.00,
-                'requires_prescription': False
+                'price': 150.00
             },
             {
                 'name': 'Massage Therapy',
                 'description': 'Professional therapeutic massage to relieve muscle tension, improve circulation, and promote relaxation.',
                 'duration_minutes': 60,
-                'price': 300.00,
-                'requires_prescription': False
+                'price': 300.00
             },
             {
                 'name': 'Cupping Therapy',
                 'description': 'Traditional cupping technique using suction cups to improve blood circulation and reduce muscle tension.',
                 'duration_minutes': 40,
-                'price': 250.00,
-                'requires_prescription': False
+                'price': 250.00
             },
             {
                 'name': 'Physiotherapy Session',
                 'description': 'Comprehensive physiotherapy assessment and treatment for musculoskeletal conditions and rehabilitation.',
                 'duration_minutes': 50,
-                'price': 350.00,
-                'requires_prescription': True
+                'price': 350.00
             },
             {
                 'name': 'Biochemic Consultation',
                 'description': 'Personalized biochemic salt therapy consultation based on individual health assessment and requirements.',
                 'duration_minutes': 30,
-                'price': 200.00,
-                'requires_prescription': False
+                'price': 200.00
             },
             {
                 'name': 'Health Wellness Consultation',
                 'description': 'Comprehensive health assessment and personalized wellness plan including lifestyle and dietary recommendations.',
                 'duration_minutes': 45,
-                'price': 400.00,
-                'requires_prescription': False
+                'price': 400.00
             },
             {
                 'name': 'Pain Management Session',
                 'description': 'Specialized treatment combining multiple therapies for chronic pain management and relief.',
                 'duration_minutes': 60,
-                'price': 450.00,
-                'requires_prescription': True
+                'price': 450.00
             }
         ]
         

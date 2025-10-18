@@ -1,9 +1,6 @@
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.utils import timezone
 import uuid
-
-User = get_user_model()
 
 class Service(models.Model):
     """
@@ -22,10 +19,6 @@ class Service(models.Model):
         help_text="Service price in INR"
     )
     is_active = models.BooleanField(default=True)
-    requires_prescription = models.BooleanField(
-        default=False,
-        help_text="Whether this service requires prescription upload"
-    )
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -63,15 +56,6 @@ class Booking(models.Model):
         default=uuid.uuid4, 
         editable=False, 
         unique=True
-    )
-    
-    # Patient information (optional - for guests)
-    patient = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
-        related_name='bookings',
-        null=True,
-        blank=True
     )
     
     # Service details
@@ -199,12 +183,6 @@ class PrescriptionUpload(models.Model):
     """
     booking = models.ForeignKey(
         Booking, 
-        on_delete=models.CASCADE, 
-        related_name='prescriptions'
-    )
-    
-    patient = models.ForeignKey(
-        User, 
         on_delete=models.CASCADE, 
         related_name='prescriptions'
     )

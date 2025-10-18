@@ -67,7 +67,6 @@ INSTALLED_APPS = [
     'django_extensions',
     
     # Local apps
-    'accounts',
     'bookings',
     'blog',
     'career',
@@ -177,13 +176,13 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom User Model
-AUTH_USER_MODEL = 'accounts.User'
+# AUTH_USER_MODEL = 'accounts.User'
 
 # Authentication Backends
-AUTHENTICATION_BACKENDS = [
-    'accounts.backends.EmailBackend',  # Custom email authentication
-    'django.contrib.auth.backends.ModelBackend',  # Fallback to default
-]
+# AUTHENTICATION_BACKENDS = [
+#     'accounts.backends.EmailBackend',  # Custom email authentication
+#     'django.contrib.auth.backends.ModelBackend',  # Fallback to default
+# ]
 
 # Crispy Forms Configuration
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
@@ -208,19 +207,19 @@ CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
 RAZORPAY_KEY_ID = env('RAZORPAY_KEY_ID', default='rzp_test_1DP5mmOlF5G5ag')
 RAZORPAY_KEY_SECRET = env('RAZORPAY_KEY_SECRET', default='dIGQzxjIl2ZS6SdWrBr9IOX5')
 
-# Email Configuration
-EMAIL_BACKEND = env('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
-EMAIL_HOST = env('EMAIL_HOST', default='')
-EMAIL_PORT = env('EMAIL_PORT', default=587)
-EMAIL_USE_TLS = env('EMAIL_USE_TLS', default=True)
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@biophysioconsultant.in')
+# Email Configuration (Hardcoded for production)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'biophysioconsultant@gmail.com'
+EMAIL_HOST_PASSWORD = 'your_app_password_here'  # Replace with actual Gmail app password
+DEFAULT_FROM_EMAIL = 'biophysioconsultant@gmail.com'
 
 # Login/Logout URLs
-LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/'
+# LOGIN_URL = '/accounts/login/'
+# LOGIN_REDIRECT_URL = '/dashboard/'
+# LOGOUT_REDIRECT_URL = '/'
 
 # File Upload Settings
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
@@ -369,7 +368,7 @@ UNFOLD = {
                     {
                         "title": "Users",
                         "icon": "group",
-                        "link": lambda request: reverse_lazy("admin:accounts_user_changelist"),
+                        "link": lambda request: reverse_lazy("admin:auth_user_changelist"),
                     },
                 ],
             },

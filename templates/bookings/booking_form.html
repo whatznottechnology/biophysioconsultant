@@ -5,206 +5,215 @@
 
 {% block extra_css %}
 <style>
-    .booking-step {
+    .step-indicator {
         transition: all 0.3s ease;
     }
-    .booking-step.active {
-        border-color: #10B981;
-        background-color: #F0FDF4;
+    .step-indicator.active {
+        background-color: #10B981;
+        color: white;
+    }
+    .step-indicator.completed {
+        background-color: #059669;
+        color: white;
     }
     .service-card {
         transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
     }
     .service-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
     .service-card.selected {
         border-color: #10B981;
         background-color: #F0FDF4;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
     }
-    .time-slot {
-        transition: all 0.2s ease;
+    .hidden {
+        display: none !important;
     }
-    .time-slot:hover {
-        background-color: #F3F4F6;
+    .auth-modal {
+        background-color: rgba(0, 0, 0, 0.5);
+        overflow-y: auto;
     }
-    .time-slot.selected {
-        background-color: #10B981;
-        color: white;
+    .auth-modal-content {
+        max-height: 80vh;
+        overflow-y: auto;
+        margin: auto;
     }
-    .time-slot:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
+    @media (max-width: 640px) {
+        .service-card {
+            padding: 1rem;
+        }
+        .auth-modal-content {
+            max-height: 85vh;
+            max-width: 95vw;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-gray-50 py-4 sm:py-8">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Progress Steps -->
-        <div class="mb-8">
+        <div class="mb-6 sm:mb-8">
             <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="booking-step active flex items-center justify-center w-10 h-10 rounded-full border-2 border-green-500 bg-green-50">
-                        <span class="text-sm font-medium text-green-600">1</span>
-                    </div>
-                    <span class="text-sm font-medium text-gray-900">Service Selection</span>
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <div id="step1-indicator" class="step-indicator active flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 font-medium text-sm sm:text-base">1</div>
+                    <span class="text-xs sm:text-sm font-medium text-gray-900 hidden sm:inline">Service</span>
                 </div>
-                <div class="flex-1 mx-4">
-                    <div class="h-1 bg-gray-200 rounded-full">
-                        <div class="h-1 bg-green-500 rounded-full" style="width: 0%" id="progress-bar"></div>
-                    </div>
+                <div class="flex-1 mx-2 sm:mx-4 h-1 bg-gray-200 rounded">
+                    <div id="progress-bar-1" class="h-1 bg-green-500 rounded transition-all duration-300" style="width: 0%"></div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <div class="booking-step flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300">
-                        <span class="text-sm font-medium text-gray-500">2</span>
-                    </div>
-                    <span class="text-sm font-medium text-gray-500">Payment</span>
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <div id="step2-indicator" class="step-indicator flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 font-medium text-sm sm:text-base">2</div>
+                    <span class="text-xs sm:text-sm font-medium text-gray-500 hidden sm:inline">Details</span>
+                </div>
+                <div class="flex-1 mx-2 sm:mx-4 h-1 bg-gray-200 rounded">
+                    <div id="progress-bar-2" class="h-1 bg-green-500 rounded transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <div id="step3-indicator" class="step-indicator flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 font-medium text-sm sm:text-base">3</div>
+                    <span class="text-xs sm:text-sm font-medium text-gray-500 hidden sm:inline">Payment</span>
                 </div>
             </div>
         </div>
 
         <!-- Booking Form -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h1 class="text-2xl font-bold text-gray-900 mb-6">Book Your Appointment</h1>
+        <div class="bg-white rounded-lg shadow-md p-4 sm:p-6">
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Book Your Appointment</h1>
             
-            <form method="post" enctype="multipart/form-data" id="booking-form">
+            <form method="post" enctype="multipart/form-data" id="booking-form" action="{% url 'book_appointment' %}">
                 {% csrf_token %}
                 
                 <!-- Step 1: Service Selection -->
-                <div id="step-1" class="booking-step-content">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Select Service</h2>
+                <div id="step-1" class="step-content">
+                    <h2 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Select Service</h2>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
                         {% for service in services %}
-                        <div class="service-card border-2 border-gray-200 rounded-lg p-4 cursor-pointer" 
+                        <div class="service-card border-2 border-gray-200 rounded-lg p-3 sm:p-4" 
                              data-service-id="{{ service.id }}" 
                              data-service-price="{{ service.price }}" 
                              data-service-duration="{{ service.duration_minutes }}"
-                             data-requires-prescription="{{ service.requires_prescription|yesno:'true,false' }}">
+                             data-service-name="{{ service.name }}">
                             <div class="flex justify-between items-start mb-2">
-                                <h3 class="font-medium text-gray-900">{{ service.name }}</h3>
-                                <span class="text-green-600 font-semibold">₹{{ service.price }}</span>
+                                <h3 class="font-medium text-sm sm:text-base text-gray-900">{{ service.name }}</h3>
+                                <span class="text-green-600 font-semibold text-sm sm:text-base">₹{{ service.price }}</span>
                             </div>
-                            <p class="text-sm text-gray-600 mb-2">{{ service.description }}</p>
-                            <div class="flex items-center justify-between text-xs text-gray-500">
-                                <span><i class="fas fa-clock mr-1"></i>{{ service.duration_minutes }} mins</span>
-                                {% if service.requires_prescription %}
-                                <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded">
-                                    <i class="fas fa-prescription-bottle mr-1"></i>Prescription Required
-                                </span>
-                                {% endif %}
+                            <p class="text-xs sm:text-sm text-gray-600 mb-2">{{ service.description|truncatewords:15 }}</p>
+                            <div class="flex items-center text-xs text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>{{ service.duration_minutes }} mins
                             </div>
                         </div>
                         {% endfor %}
                     </div>
                     
-                    <!-- Prescription Upload (Hidden by default) -->
-                    <div id="prescription-section" class="hidden mb-6">
-                        <h3 class="text-md font-medium text-gray-900 mb-2">Upload Prescription</h3>
-                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                            <input type="file" name="prescription" id="prescription-upload" class="hidden" accept="image/*,.pdf">
-                            <label for="prescription-upload" class="cursor-pointer">
-                                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                                <p class="text-sm text-gray-600">Click to upload prescription</p>
-                                <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
-                            </label>
-                            <div id="prescription-preview" class="hidden mt-4">
-                                <p class="text-sm text-green-600"><i class="fas fa-check mr-1"></i>File uploaded successfully</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="button" id="next-to-step-2" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                        Continue to Patient Details & Payment
+                    <button type="button" id="next-to-step-2" class="w-full bg-green-600 text-white py-2.5 sm:py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base" disabled>
+                        Continue to Details <i class="fas fa-arrow-right ml-2"></i>
                     </button>
                 </div>
 
-                <!-- Step 2: Patient Details & Payment -->
-                <div id="step-2" class="booking-step-content hidden">
-                    <div class="flex items-center mb-4">
-                        <button type="button" id="back-to-step-1" class="text-green-600 hover:text-green-700 mr-4">
+                <!-- Step 2: Contact Details -->
+                <div id="step-2" class="step-content hidden">
+                    <div class="flex items-center mb-3 sm:mb-4">
+                        <button type="button" id="back-to-step-1" class="text-green-600 hover:text-green-700 mr-4 text-sm sm:text-base">
                             <i class="fas fa-arrow-left mr-1"></i>Back
                         </button>
-                        <h2 class="text-lg font-semibold text-gray-900">Patient Details & Payment</h2>
+                        <h2 class="text-base sm:text-lg font-semibold text-gray-900">Contact Details</h2>
                     </div>
                     
                     <!-- Selected Service Summary -->
-                    <div id="service-summary" class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
                         <div class="flex justify-between items-center">
                             <div>
-                                <h3 id="selected-service-name" class="font-medium text-gray-900"></h3>
-                                <p class="text-sm text-gray-600">
-                                    <span id="selected-service-duration"></span> minutes • 
-                                    ₹<span id="selected-service-price"></span>
+                                <h3 id="selected-service-name" class="font-medium text-sm sm:text-base text-gray-900"></h3>
+                                <p class="text-xs sm:text-sm text-gray-600">
+                                    <span id="selected-service-duration"></span> minutes • ₹<span id="selected-service-price"></span>
                                 </p>
                             </div>
-                            <button type="button" id="change-service" class="text-green-600 hover:text-green-700 text-sm">
-                                Change Service
+                            <button type="button" id="change-service" class="text-green-600 hover:text-green-700 text-xs sm:text-sm">
+                                Change
                             </button>
                         </div>
                     </div>
 
                     <!-- Patient Details -->
-                    <div class="space-y-4 mb-6">
-                        <h3 class="text-md font-medium text-gray-900">Patient Details</h3>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                                <input type="text" name="patient_name" required 
-                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-green-500 focus:border-green-500"
+                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                                <input type="text" name="patient_name" id="patient_name" required 
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:ring-green-500 focus:border-green-500"
                                        placeholder="Enter full name">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
-                                <input type="tel" name="patient_phone" required 
-                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-green-500 focus:border-green-500"
-                                       placeholder="+91 9876543210">
+                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                                <input type="tel" name="patient_phone" id="patient_phone" required 
+                                       pattern="[0-9]{10}" 
+                                       title="Please enter a valid 10-digit phone number"
+                                       maxlength="10"
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:ring-green-500 focus:border-green-500"
+                                       placeholder="9876543210">
+                                <p class="text-xs text-gray-500 mt-1">Enter 10-digit mobile number</p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                            <div>
+                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                                <input type="email" name="patient_email" id="patient_email" required 
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:ring-green-500 focus:border-green-500"
+                                       placeholder="email@example.com">
+                            </div>
+                            <div>
+                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Age *</label>
+                                <input type="number" name="patient_age" id="patient_age" required min="1" max="120"
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:ring-green-500 focus:border-green-500"
+                                       placeholder="Enter age">
                             </div>
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                            <input type="email" name="patient_email" 
-                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-green-500 focus:border-green-500"
-                                   placeholder="email@example.com">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Age *</label>
-                            <input type="number" name="patient_age" required min="1" max="120"
-                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-green-500 focus:border-green-500"
-                                   placeholder="Enter age">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Chief Complaint / Symptoms</label>
-                            <textarea name="symptoms" rows="3" 
-                                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-green-500 focus:border-green-500"
+                            <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Chief Complaint / Symptoms</label>
+                            <textarea name="symptoms" id="symptoms" rows="2" 
+                                      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:ring-green-500 focus:border-green-500"
                                       placeholder="Describe your symptoms or reason for visit..."></textarea>
                         </div>
                         
-                        <!-- Optional Prescription/Report Upload -->
+                        <!-- Optional File Upload -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Prescription/Report Upload (Optional)
+                            <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+                                Medical Reports/Documents (Optional)
                             </label>
                             <input type="file" 
                                    name="prescription_file"
+                                   id="prescription_file"
                                    accept=".pdf,.jpg,.jpeg,.png"
-                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-green-500 focus:border-green-500">
-                            <p class="text-sm text-gray-500 mt-1">Upload any relevant medical reports, prescriptions, or images (PDF, JPG, PNG - Max 5MB)</p>
+                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs sm:text-sm focus:ring-green-500 focus:border-green-500">
+                            <p class="text-xs text-gray-500 mt-1">Upload medical reports, prescriptions, or images (PDF, JPG, PNG - Max 5MB)</p>
                         </div>
                     </div>
                     
+                    <button type="button" id="next-to-step-3" class="w-full bg-green-600 text-white py-2.5 sm:py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base" disabled>
+                        Continue to Payment <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- Step 3: Payment -->
+                <div id="step-3" class="step-content hidden">
+                    <div class="flex items-center mb-3 sm:mb-4">
+                        <button type="button" id="back-to-step-2" class="text-green-600 hover:text-green-700 mr-4 text-sm sm:text-base">
+                            <i class="fas fa-arrow-left mr-1"></i>Back
+                        </button>
+                        <h2 class="text-base sm:text-lg font-semibold text-gray-900">Payment & Confirmation</h2>
+                    </div>
+                    
                     <!-- Booking Summary -->
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Booking Summary</h3>
-                        
-                        <div class="space-y-3">
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+                        <h3 class="text-sm sm:text-base font-medium text-gray-900 mb-3">Booking Summary</h3>
+                        <div class="space-y-2 text-xs sm:text-sm">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Service:</span>
                                 <span id="summary-service-name" class="font-medium"></span>
@@ -218,37 +227,37 @@
                                 <span id="summary-duration" class="font-medium"></span>
                             </div>
                             <hr class="border-gray-300">
-                            <div class="flex justify-between text-lg">
-                                <span class="font-semibold">Total Amount:</span>
-                                <span class="font-bold text-green-600">₹<span id="summary-total"></span></span>
+                            <div class="flex justify-between text-base sm:text-lg font-bold">
+                                <span>Total Amount:</span>
+                                <span class="text-green-600">₹<span id="summary-total"></span></span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Payment Options -->
-                    <div class="mb-6">
-                        <h3 class="text-md font-medium text-gray-900 mb-3">Payment Method</h3>
+                    <div class="mb-4 sm:mb-6">
+                        <h3 class="text-sm sm:text-base font-medium text-gray-900 mb-3">Payment Method</h3>
                         <div class="space-y-3">
-                            <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                            <label class="flex items-center p-3 sm:p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
                                 <input type="radio" name="payment_method" value="online" checked class="text-green-600 mr-3">
                                 <div class="flex-1">
-                                    <div class="flex items-center">
+                                    <div class="flex items-center text-sm sm:text-base">
                                         <i class="fas fa-credit-card text-blue-500 mr-2"></i>
                                         <span class="font-medium">Pay Online</span>
-                                        <span class="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Secure</span>
+                                        <span class="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">Secure</span>
                                     </div>
-                                    <p class="text-sm text-gray-600 mt-1">Pay securely using UPI, Card, or Net Banking</p>
+                                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Pay securely using UPI, Card, or Net Banking</p>
                                 </div>
                             </label>
                             
-                            <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                            <label class="flex items-center p-3 sm:p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
                                 <input type="radio" name="payment_method" value="cash" class="text-green-600 mr-3">
                                 <div class="flex-1">
-                                    <div class="flex items-center">
+                                    <div class="flex items-center text-sm sm:text-base">
                                         <i class="fas fa-money-bill-wave text-green-500 mr-2"></i>
                                         <span class="font-medium">Pay at Clinic</span>
                                     </div>
-                                    <p class="text-sm text-gray-600 mt-1">Pay cash when you visit the clinic</p>
+                                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Pay cash when you visit the clinic</p>
                                 </div>
                             </label>
                         </div>
@@ -258,21 +267,21 @@
                     <div class="mb-6">
                         <label class="flex items-start">
                             <input type="checkbox" id="terms-checkbox" class="mt-1 text-green-600 mr-3" required>
-                            <span class="text-sm text-gray-600">
+                            <span class="text-xs sm:text-sm text-gray-600">
                                 I agree to the <a href="#" class="text-green-600 hover:underline">Terms & Conditions</a> 
-                                and <a href="#" class="text-green-600 hover:underline">Privacy Policy</a>. 
-                                I understand the cancellation policy requires 24 hours advance notice.
+                                and <a href="#" class="text-green-600 hover:underline">Privacy Policy</a>.
                             </span>
                         </label>
                     </div>
                     
-                    <button type="submit" id="confirm-booking" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                        <i class="fas fa-lock mr-2"></i>Confirm Booking & Pay
+                    <button type="button" id="confirm-booking" class="w-full bg-green-600 text-white py-2.5 sm:py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base">
+                        <i class="fas fa-lock mr-2"></i>Confirm Booking
                     </button>
                 </div>
 
                 <!-- Hidden fields -->
                 <input type="hidden" name="service" id="selected-service-id">
+                <input type="hidden" name="payment_id" id="payment-id-value" value="">
             </form>
         </div>
     </div>
@@ -282,9 +291,10 @@
 <div id="loading-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-lg p-6 text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-        <p class="text-gray-700">Processing your booking...</p>
+        <p class="text-gray-700 text-sm sm:text-base">Processing your booking...</p>
     </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -296,50 +306,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // Service selection
     document.querySelectorAll('.service-card').forEach(card => {
         card.addEventListener('click', function() {
-            // Remove selection from other cards
             document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
-            
-            // Select this card
             this.classList.add('selected');
             
-            // Store selected service
             selectedService = {
                 id: this.dataset.serviceId,
-                name: this.textContent.split('₹')[0].trim(),
+                name: this.dataset.serviceName,
                 price: this.dataset.servicePrice,
-                duration: this.dataset.serviceDuration,
-                requiresPrescription: this.dataset.requiresPrescription === 'true'
+                duration: this.dataset.serviceDuration
             };
             
-            // Show/hide prescription section
-            const prescriptionSection = document.getElementById('prescription-section');
-            if (selectedService.requiresPrescription) {
-                prescriptionSection.classList.remove('hidden');
-            } else {
-                prescriptionSection.classList.add('hidden');
-            }
-            
-            // Enable next button
-            document.getElementById('next-to-step-2').disabled = false;
-            
-            // Update hidden field
             document.getElementById('selected-service-id').value = selectedService.id;
+            document.getElementById('next-to-step-2').disabled = false;
         });
     });
     
-    // Prescription upload
-    document.getElementById('prescription-upload').addEventListener('change', function() {
-        const preview = document.getElementById('prescription-preview');
-        if (this.files.length > 0) {
-            preview.classList.remove('hidden');
-        } else {
-            preview.classList.add('hidden');
-        }
-    });
-    
     // Step navigation
-    document.getElementById('next-to-step-2').addEventListener('click', function() {
-        if (selectedService && (!selectedService.requiresPrescription || document.getElementById('prescription-upload').files.length > 0)) {
+    document.getElementById('next-to-step-2').addEventListener('click', () => {
+        if (selectedService) {
             showStep(2);
             updateBookingSummary();
         }
@@ -348,52 +332,66 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('back-to-step-1').addEventListener('click', () => showStep(1));
     document.getElementById('change-service').addEventListener('click', () => showStep(1));
     
-    // Check step 2 completion
-    function checkStep2Completion() {
-        const patientName = document.querySelector('input[name="patient_name"]').value;
-        const patientPhone = document.querySelector('input[name="patient_phone"]').value;
-        const patientAge = document.querySelector('input[name="patient_age"]').value;
+    document.getElementById('next-to-step-3').addEventListener('click', () => {
+        if (validateStep2()) {
+            showStep(3);
+            updateBookingSummary();
+        }
+    });
+    
+    document.getElementById('back-to-step-2').addEventListener('click', () => showStep(2));
+    
+    // Validate step 2
+    function validateStep2() {
+        const name = document.getElementById('patient_name').value.trim();
+        const phone = document.getElementById('patient_phone').value.trim();
+        const email = document.getElementById('patient_email').value.trim();
+        const age = document.getElementById('patient_age').value.trim();
         
-        const isComplete = patientName && patientPhone && patientAge;
-        document.getElementById('confirm-booking').disabled = !isComplete || !document.getElementById('terms-checkbox').checked;
+        return name && phone && email && age;
     }
     
-    // Monitor patient details input
-    ['patient_name', 'patient_phone', 'patient_age'].forEach(name => {
-        document.querySelector(`input[name="${name}"]`).addEventListener('input', checkStep2Completion);
+    // Monitor step 2 inputs
+    ['patient_name', 'patient_phone', 'patient_email', 'patient_age'].forEach(id => {
+        document.getElementById(id).addEventListener('input', function() {
+            document.getElementById('next-to-step-3').disabled = !validateStep2();
+        });
     });
     
     // Update booking summary
     function updateBookingSummary() {
         if (selectedService) {
-            document.getElementById('service-summary').classList.remove('hidden');
             document.getElementById('selected-service-name').textContent = selectedService.name;
             document.getElementById('selected-service-duration').textContent = selectedService.duration;
             document.getElementById('selected-service-price').textContent = selectedService.price;
             
-            // Summary in step 2
             document.getElementById('summary-service-name').textContent = selectedService.name;
             document.getElementById('summary-duration').textContent = `${selectedService.duration} minutes`;
             document.getElementById('summary-total').textContent = selectedService.price;
         }
         
-        // Update patient name in summary when input changes
-        document.querySelector('input[name="patient_name"]').addEventListener('input', function() {
-            document.getElementById('summary-patient-name').textContent = this.value;
-        });
+        const patientName = document.getElementById('patient_name').value;
+        if (patientName) {
+            document.getElementById('summary-patient-name').textContent = patientName;
+        }
     }
     
-    // Terms checkbox
-    document.getElementById('terms-checkbox').addEventListener('change', function() {
-        checkStep2Completion();
-    });
-    
-    // Form submission
-    document.getElementById('booking-form').addEventListener('submit', function(e) {
-        e.preventDefault();
+    // Confirm booking
+    document.getElementById('confirm-booking').addEventListener('click', async function() {
+        if (!document.getElementById('terms-checkbox').checked) {
+            alert('Please accept the terms and conditions');
+            return;
+        }
+        
+        // Disable button to prevent double submission
+        const confirmBtn = document.getElementById('confirm-booking');
+        if (confirmBtn.disabled) {
+            return; // Already processing
+        }
         
         const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
         
+        // Handle payment based on method
         if (paymentMethod === 'online') {
             initiateOnlinePayment();
         } else {
@@ -401,8 +399,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Online payment
+    // Initiate online payment
     function initiateOnlinePayment() {
+        // Validate selectedService exists
+        if (!selectedService) {
+            alert('Please select a service first');
+            return;
+        }
+        
         document.getElementById('loading-modal').classList.remove('hidden');
         document.getElementById('loading-modal').classList.add('flex');
         
@@ -414,7 +418,8 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({
                 amount: selectedService.price,
-                currency: 'INR'
+                currency: 'INR',
+                patient_name: document.getElementById('patient_name').value
             })
         })
         .then(response => response.json())
@@ -423,20 +428,26 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('loading-modal').classList.remove('flex');
             
             if (data.success) {
+                // Check if Razorpay is loaded
+                if (typeof Razorpay === 'undefined') {
+                    alert('Payment gateway not loaded. Please refresh the page and try again.');
+                    return;
+                }
+                
                 const options = {
                     key: data.razorpay_key,
                     amount: data.order.amount,
                     currency: data.order.currency,
-                    name: 'Bio-Physio Consultant',
+                    name: '{{ site_settings.site_name }}',
                     description: selectedService.name,
                     order_id: data.order.id,
                     handler: function(response) {
                         verifyPayment(response);
                     },
                     prefill: {
-                        name: document.querySelector('input[name="patient_name"]').value,
-                        email: document.querySelector('input[name="patient_email"]').value,
-                        contact: document.querySelector('input[name="patient_phone"]').value
+                        name: document.getElementById('patient_name').value,
+                        email: document.getElementById('patient_email').value,
+                        contact: document.getElementById('patient_phone').value
                     },
                     theme: {
                         color: '#10B981'
@@ -446,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const rzp = new Razorpay(options);
                 rzp.open();
             } else {
-                alert('Error creating payment order. Please try again.');
+                alert(data.error || 'Error creating payment order. Please try again.');
             }
         })
         .catch(error => {
@@ -473,19 +484,14 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Add payment info to form
-                const form = document.getElementById('booking-form');
-                const paymentIdInput = document.createElement('input');
-                paymentIdInput.type = 'hidden';
-                paymentIdInput.name = 'payment_id';
-                paymentIdInput.value = paymentResponse.razorpay_payment_id;
-                form.appendChild(paymentIdInput);
+                // Update payment ID in hidden field
+                document.getElementById('payment-id-value').value = paymentResponse.razorpay_payment_id;
                 
                 submitBooking();
             } else {
                 document.getElementById('loading-modal').classList.add('hidden');
                 document.getElementById('loading-modal').classList.remove('flex');
-                alert('Payment verification failed. Please contact support.');
+                alert(data.error || 'Payment verification failed. Please contact support.');
             }
         })
         .catch(error => {
@@ -498,10 +504,20 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Submit booking
     function submitBooking() {
+        console.log('=== Starting booking submission ===');
         const form = document.getElementById('booking-form');
         const formData = new FormData(form);
         
-        fetch(form.action || window.location.pathname, {
+        // Debug: Log all form data
+        console.log('Form data:');
+        for (let [key, value] of formData.entries()) {
+            console.log(`  ${key}: ${value}`);
+        }
+        
+        document.getElementById('loading-modal').classList.remove('hidden');
+        document.getElementById('loading-modal').classList.add('flex');
+        
+        fetch(form.action, {
             method: 'POST',
             body: formData,
             headers: {
@@ -509,68 +525,88 @@ document.addEventListener('DOMContentLoaded', function() {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(response => response.json())
+        .then(async response => {
+            console.log('Response status:', response.status);
+            console.log('Response content-type:', response.headers.get('content-type'));
+            
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return response.json();
+            } else {
+                // If HTML response, log it and throw error
+                const text = await response.text();
+                console.error('Received HTML instead of JSON:');
+                console.error(text.substring(0, 500)); // First 500 chars
+                throw new Error('Server returned HTML instead of JSON. Check server logs.');
+            }
+        })
         .then(data => {
+            console.log('Response data:', data);
             document.getElementById('loading-modal').classList.add('hidden');
             document.getElementById('loading-modal').classList.remove('flex');
             
             if (data.success) {
-                window.location.href = data.redirect_url || '/booking-success/';
-            } else if (data.requires_login) {
-                // Show login/signup modal or redirect
-                if (confirm(data.message + ' Would you like to create an account now?')) {
-                    window.location.href = data.register_url + '?next=' + encodeURIComponent(window.location.pathname);
-                } else {
-                    window.location.href = data.login_url + '?next=' + encodeURIComponent(window.location.pathname);
-                }
+                console.log('Booking successful! Redirecting to:', data.redirect_url);
+                window.location.href = data.redirect_url;
             } else {
-                alert(data.error || 'Booking failed. Please try again.');
+                console.error('Booking failed:', data.error);
+                if (data.form_errors) {
+                    console.error('Form errors:', data.form_errors);
+                    let errorMsg = 'Form validation errors:\n';
+                    for (let field in data.form_errors) {
+                        errorMsg += `${field}: ${data.form_errors[field].join(', ')}\n`;
+                    }
+                    alert(errorMsg);
+                } else {
+                    alert(data.error || 'Booking failed. Please try again.');
+                }
             }
         })
         .catch(error => {
             document.getElementById('loading-modal').classList.add('hidden');
             document.getElementById('loading-modal').classList.remove('flex');
             console.error('Booking error:', error);
-            alert('Booking error. Please try again.');
+            alert('Booking error: ' + error.message + '. Please check console for details.');
         });
     }
     
     // Show step
     function showStep(step) {
-        // Hide all steps
-        document.querySelectorAll('.booking-step-content').forEach(content => {
+        document.querySelectorAll('.step-content').forEach(content => {
             content.classList.add('hidden');
         });
-        
-        // Show selected step
         document.getElementById(`step-${step}`).classList.remove('hidden');
         
-        // Update progress
         currentStep = step;
         updateProgress();
         updateStepIndicators();
     }
     
-    // Update progress bar
+    // Update progress
     function updateProgress() {
-        const progress = ((currentStep - 1) / 1) * 100; // Now only 2 steps (0-100%)
-        document.getElementById('progress-bar').style.width = `${progress}%`;
+        const progress1 = currentStep >= 2 ? 100 : 0;
+        const progress2 = currentStep >= 3 ? 100 : 0;
+        
+        document.getElementById('progress-bar-1').style.width = `${progress1}%`;
+        document.getElementById('progress-bar-2').style.width = `${progress2}%`;
     }
     
     // Update step indicators
     function updateStepIndicators() {
-        document.querySelectorAll('.booking-step').forEach((step, index) => {
-            const stepNumber = index + 1;
-            if (stepNumber <= currentStep) {
-                step.classList.add('active');
-            } else {
-                step.classList.remove('active');
+        for (let i = 1; i <= 3; i++) {
+            const indicator = document.getElementById(`step${i}-indicator`);
+            indicator.classList.remove('active', 'completed');
+            
+            if (i < currentStep) {
+                indicator.classList.add('completed');
+            } else if (i === currentStep) {
+                indicator.classList.add('active');
             }
-        });
+        }
     }
 });
 </script>
 
-<!-- Razorpay Checkout -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 {% endblock %}

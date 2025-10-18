@@ -2,17 +2,30 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils import timezone
-from unfold.admin import ModelAdmin
+from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import display
 from .models import Service, Booking, PrescriptionUpload
+
+class PrescriptionUploadInline(TabularInline):
+    model = PrescriptionUpload
+    extra = 0
+    readonly_fields = ('file_name', 'file_type', 'file_size', 'uploaded_at')
+    fields = ('file', 'file_name', 'file_type', 'file_size', 'description', 'uploaded_at')
+    show_change_link = True
+    
+    def file_size_mb(self, obj):
+        if obj.file_size:
+            return f"{obj.file_size / (1024*1024):.2f} MB"
+        return "Unknown"
+    file_size_mb.short_description = 'Size'
 
 @admin.register(Service)
 class ServiceAdmin(ModelAdmin):
     list_display = (
-        'name', 'price_display', 'duration_minutes', 'prescription_badge', 
+        'name', 'price_display', 'duration_minutes', 
         'active_status', 'created_at'
     )
-    list_filter = ('is_active', 'requires_prescription', 'created_at')
+    list_filter = ('is_active', 'created_at')
     search_fields = ('name', 'description')
     ordering = ('name',)
     list_per_page = 20
@@ -22,8 +35,8 @@ class ServiceAdmin(ModelAdmin):
             'fields': ('name', 'description', 'duration_minutes'),
             'classes': ['tab']
         }),
-        ('💰 Pricing & Requirements', {
-            'fields': ('price', 'requires_prescription'),
+        ('💰 Pricing', {
+            'fields': ('price',),
             'classes': ['tab']
         }),
         ('✅ Status', {
@@ -37,16 +50,6 @@ class ServiceAdmin(ModelAdmin):
         return format_html(
             '<span style="color: #10b981; font-weight: 600; font-size: 14px;">₹{}</span>',
             obj.price
-        )
-    
-    @display(description='Prescription', ordering='requires_prescription')
-    def prescription_badge(self, obj):
-        if obj.requires_prescription:
-            return format_html(
-                '<span style="background-color: #f59e0b; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">📋 Required</span>'
-            )
-        return format_html(
-            '<span style="background-color: #6b7280; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">➖ Not Required</span>'
         )
     
     @display(description='Status', ordering='is_active')
@@ -73,7 +76,7 @@ class BookingAdmin(ModelAdmin):
     
     search_fields = (
         'patient_name', 'patient_phone', 'patient_whatsapp', 
-        'booking_id', 'patient__username', 'patient__email'
+        'booking_id'
     )
     
     ordering = ('-appointment_date', '-appointment_time')
@@ -82,10 +85,12 @@ class BookingAdmin(ModelAdmin):
     
     readonly_fields = ('booking_id', 'created_at', 'updated_at')
     
+    inlines = [PrescriptionUploadInline]
+    
     fieldsets = (
         ('📅 Booking Information', {
             'fields': (
-                'booking_id', 'patient', 'service', 'appointment_date', 
+                'booking_id', 'service', 'appointment_date', 
                 'appointment_time', 'duration_minutes'
             ),
             'classes': ['tab']
@@ -203,7 +208,7 @@ class PrescriptionUploadAdmin(ModelAdmin):
     )
     
     list_filter = ('uploaded_at', 'file_type')
-    search_fields = ('booking__patient_name', 'patient__username', 'file_name')
+    search_fields = ('booking__patient_name', 'file_name')
     ordering = ('-uploaded_at',)
     
     readonly_fields = ('file_name', 'file_type', 'file_size', 'uploaded_at')

@@ -18,18 +18,11 @@
         <span class="text-xs mt-1">Book</span>
     </a>
 
-    <!-- Dashboard/Profile -->
-    {% if user.is_authenticated %}
-    <a href="{% url 'accounts:dashboard' %}" class="flex flex-col items-center justify-center text-center {% if request.resolver_match.url_name == 'dashboard' and 'accounts' in request.resolver_match.app_name %}text-primary{% else %}text-gray-500{% endif %}">
-        <i class="fas fa-tachometer-alt text-lg mb-1"></i>
-        <span class="text-xs">Dashboard</span>
+    <!-- Contact -->
+    <a href="{% url 'contact:contact' %}" class="flex flex-col items-center justify-center text-center {% if 'contact' in request.resolver_match.app_name %}text-primary{% else %}text-gray-500{% endif %}">
+        <i class="fas fa-envelope text-lg mb-1"></i>
+        <span class="text-xs">Contact</span>
     </a>
-    {% else %}
-    <a href="{% url 'accounts:login' %}" class="flex flex-col items-center justify-center text-center text-gray-500">
-        <i class="fas fa-user text-lg mb-1"></i>
-        <span class="text-xs">Login</span>
-    </a>
-    {% endif %}
 
     <!-- More/Menu -->
     <button id="mobile-more-menu" class="flex flex-col items-center justify-center text-center text-gray-500" onclick="toggleMobileMore()">
@@ -56,32 +49,10 @@
                 <span class="text-sm">Career</span>
             </a>
             
-            <a href="{% url 'contact:contact' %}" class="flex flex-col items-center p-4 rounded-lg hover:bg-gray-50" onclick="toggleMobileMore()">
-                <i class="fas fa-envelope text-2xl text-primary mb-2"></i>
-                <span class="text-sm">Contact</span>
+            <a href="{% url 'blog:blog_list' %}" class="flex flex-col items-center p-4 rounded-lg hover:bg-gray-50" onclick="toggleMobileMore()">
+                <i class="fas fa-video text-2xl text-primary mb-2"></i>
+                <span class="text-sm">Videos</span>
             </a>
-            
-            {% if user.is_authenticated %}
-            <a href="{% url 'my_bookings' %}" class="flex flex-col items-center p-4 rounded-lg hover:bg-gray-50" onclick="toggleMobileMore()">
-                <i class="fas fa-calendar-check text-2xl text-primary mb-2"></i>
-                <span class="text-sm">Bookings</span>
-            </a>
-            
-            <a href="{% url 'accounts:profile' %}" class="flex flex-col items-center p-4 rounded-lg hover:bg-gray-50" onclick="toggleMobileMore()">
-                <i class="fas fa-user-edit text-2xl text-primary mb-2"></i>
-                <span class="text-sm">Profile</span>
-            </a>
-            
-            <a href="{% url 'accounts:logout' %}" class="flex flex-col items-center p-4 rounded-lg hover:bg-gray-50" onclick="toggleMobileMore()">
-                <i class="fas fa-sign-out-alt text-2xl text-red-500 mb-2"></i>
-                <span class="text-sm text-red-500">Logout</span>
-            </a>
-            {% else %}
-            <a href="{% url 'accounts:register' %}" class="flex flex-col items-center p-4 rounded-lg hover:bg-gray-50" onclick="toggleMobileMore()">
-                <i class="fas fa-user-plus text-2xl text-primary mb-2"></i>
-                <span class="text-sm">Register</span>
-            </a>
-            {% endif %}
         </div>
         
         <!-- Close Button -->

@@ -1,15 +1,19 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import TemplateView, CreateView, DetailView, ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.utils.decorators import method_decorator
 from .models import Service, Booking, PrescriptionUpload
-from .forms import BookingForm, PrescriptionUploadForm
+from .forms import BookingForm
 from site_settings.models import PaymentSettings
 import json
 import razorpay
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
 
 class HomeView(TemplateView):
     """
@@ -54,6 +58,7 @@ class ServicesView(ListView):
     context_object_name = 'services'
     queryset = Service.objects.filter(is_active=True).order_by('name')
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class BookingCreateView(CreateView):
     """
     Simplified booking form (no login required until payment)
@@ -100,110 +105,75 @@ class BookingCreateView(CreateView):
         return super().form_invalid(form)
     
     def form_valid(self, form):
-        # Check if user wants to pay online and is not logged in
-        payment_method = self.request.POST.get('payment_method', 'cash')
-        
-        print(f"Debug: payment_method={payment_method}")
-        print(f"Debug: User authenticated: {self.request.user.is_authenticated}")
-        print(f"Debug: POST data: {dict(self.request.POST)}")
-        
-        if payment_method == 'online' and not self.request.user.is_authenticated:
-            # Store form data in session
-            self.request.session['booking_form_data'] = {
-                'service': form.cleaned_data['service'].id,
-                'patient_name': form.cleaned_data['patient_name'],
-                'patient_age': form.cleaned_data['patient_age'],
-                'patient_phone': form.cleaned_data['patient_phone'],
-                'patient_email': form.cleaned_data.get('patient_email', ''),
-                'symptoms': form.cleaned_data.get('symptoms', ''),
-                'payment_method': payment_method
-            }
-            
-            # Store next URL
-            self.request.session['next_url'] = self.request.path
-            
-            # Return JSON response asking for login/signup
-            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({
-                    'success': False,
-                    'requires_login': True,
-                    'message': 'Please login or create an account to complete your payment.',
-                    'login_url': '/accounts/login/',
-                    'register_url': '/accounts/register/'
-                })
-            else:
-                return redirect('/accounts/login/')
-        
         try:
-            # Handle form submission
+            # Get payment method
+            payment_method = self.request.POST.get('payment_method', 'cash')
+            payment_id = self.request.POST.get('payment_id', '')
+            
+            print(f"Debug: Starting form_valid - payment_method={payment_method}, payment_id={payment_id}")
+            
+            # Create booking instance
             booking = form.save(commit=False)
             
-            # Check if payment was already completed (payment_id in POST data)
-            payment_id = self.request.POST.get('payment_id')
-            
-            print(f"Debug: payment_id={payment_id}")
-            
-            # Set user if authenticated
-            if self.request.user.is_authenticated:
-                booking.patient = self.request.user
-                
-                # Update user profile with booking data if not already set
-                user = self.request.user
-                updated = False
-                
-                if not user.phone_number and booking.patient_phone:
-                    user.phone_number = booking.patient_phone
-                    updated = True
-                
-                if not user.age and booking.patient_age:
-                    user.age = booking.patient_age
-                    updated = True
-                
-                # Update name if not set
-                if not user.first_name and booking.patient_name:
-                    name_parts = booking.patient_name.split(' ', 1)
-                    user.first_name = name_parts[0]
-                    if len(name_parts) > 1:
-                        user.last_name = name_parts[1]
-                    updated = True
-                
-                if updated:
-                    user.save()
-            
-            # Set default values based on payment status
+            # Set payment status based on payment method and payment_id
             if payment_id:
-                # Payment already completed
+                # Online payment completed
                 booking.status = 'confirmed'
                 booking.payment_status = 'paid'
                 booking.payment_id = payment_id
                 booking.confirmed_at = timezone.now()
-            else:
-                # No payment yet
+                print(f"Debug: Payment completed - payment_id={payment_id}")
+            elif payment_method == 'online':
+                # Online payment selected but not completed yet
                 booking.status = 'pending'
-                booking.payment_status = 'pending' if payment_method == 'online' else 'cash'
+                booking.payment_status = 'pending'
+                print(f"Debug: Online payment pending")
+            else:
+                # Pay at clinic
+                booking.status = 'confirmed'
+                booking.payment_status = 'pending'
+                booking.confirmed_at = timezone.now()
+                print(f"Debug: Pay at clinic selected")
             
-            # Set patient_email from form
-            patient_email = form.cleaned_data.get('patient_email')
-            if patient_email:
-                booking.patient_email = patient_email
+            # Set patient email from form
+            if form.cleaned_data.get('patient_email'):
+                booking.patient_email = form.cleaned_data['patient_email']
+            
+            # Handle file upload
+            prescription_file = self.request.FILES.get('prescription_file')
+            if prescription_file:
+                print(f"Debug: File uploaded: {prescription_file.name}")
+                # File will be handled after booking is saved
             
             # Save the booking
             booking.save()
+            print(f"Debug: Booking saved successfully - ID: {booking.booking_id}")
             
-            print(f"Debug: Booking saved successfully with ID: {booking.booking_id}")
+            # Handle prescription file upload if provided
+            if prescription_file:
+                from .models import PrescriptionUpload
+                prescription = PrescriptionUpload.objects.create(
+                    booking=booking,
+                    file=prescription_file,
+                    description='Uploaded during booking'
+                )
+                print(f"Debug: Prescription uploaded: {prescription.id}")
             
-            # Store booking ID in session
-            self.request.session['booking_id'] = str(booking.booking_id)
+            # Send booking confirmation email
+            self.send_booking_confirmation_email(booking)
             
             # Return JSON response for AJAX
             if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 response_data = {
                     'success': True,
-                    'redirect_url': reverse_lazy('thank_you', kwargs={'booking_id': booking.booking_id})
+                    'message': 'Booking created successfully',
+                    'booking_id': str(booking.booking_id),
+                    'redirect_url': f'/thank-you/{booking.booking_id}/'
                 }
                 print(f"Debug: Returning JSON response: {response_data}")
                 return JsonResponse(response_data)
             
+            # Redirect to thank you page
             return redirect('thank_you', booking_id=booking.booking_id)
             
         except Exception as e:
@@ -215,8 +185,9 @@ class BookingCreateView(CreateView):
                 return JsonResponse({
                     'success': False,
                     'error': f'Booking failed: {str(e)}'
-                })
+                }, status=500)
             else:
+                messages.error(self.request, f'Booking failed: {str(e)}')
                 return self.form_invalid(form)
     
     def get_initial(self):
@@ -238,8 +209,48 @@ class BookingCreateView(CreateView):
     
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
         return kwargs
+    
+    def send_booking_confirmation_email(self, booking):
+        """
+        Send booking confirmation email to patient
+        """
+        try:
+            subject = f'Booking Confirmation - {booking.booking_id}'
+            
+            # Prepare context for email template
+            context = {
+                'booking': booking,
+                'site_settings': None,  # We'll get this from database if needed
+            }
+            
+            # Try to get site settings
+            try:
+                from site_settings.models import SiteSettings
+                context['site_settings'] = SiteSettings.get_settings()
+            except:
+                pass
+            
+            # Render email content
+            html_message = render_to_string('emails/booking_confirmation.html', context)
+            plain_message = render_to_string('emails/booking_confirmation.txt', context)
+            
+            # Send email
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[booking.patient_email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+            
+            print(f"Booking confirmation email sent to {booking.patient_email} for booking {booking.booking_id}")
+            return True
+            
+        except Exception as e:
+            print(f"Failed to send booking confirmation email: {str(e)}")
+            return False
 
 class ThankYouView(TemplateView):
     """
@@ -271,119 +282,6 @@ class BookingStepView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['step'] = kwargs.get('step', 1)
         context['services'] = Service.objects.filter(is_active=True)
-        return context
-
-class BookingDetailView(DetailView):
-    """
-    Booking details page
-    """
-    model = Booking
-    template_name = 'bookings/booking_detail.html'
-    context_object_name = 'booking'
-    slug_field = 'booking_id'
-    slug_url_kwarg = 'booking_id'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['prescriptions'] = self.object.prescriptions.all()
-        return context
-
-class DashboardView(LoginRequiredMixin, TemplateView):
-    """
-    User dashboard with upcoming appointments and quick actions
-    """
-    template_name = 'bookings/dashboard.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        user_bookings = Booking.objects.filter(
-            patient=self.request.user
-        ).order_by('-created_at')
-        
-        context['upcoming_bookings'] = user_bookings.filter(
-            appointment_date__gte=timezone.now().date(),
-            status__in=['pending', 'confirmed']
-        )[:3]
-        
-        context['recent_bookings'] = user_bookings[:5]
-        context['total_bookings'] = user_bookings.count()
-        
-        return context
-
-class MyBookingsView(LoginRequiredMixin, ListView):
-    """
-    List all user bookings
-    """
-    model = Booking
-    template_name = 'bookings/my_bookings.html'
-    context_object_name = 'bookings'
-    paginate_by = 10
-    
-    def get_queryset(self):
-        return Booking.objects.filter(
-            patient=self.request.user
-        ).order_by('-created_at')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_bookings = Booking.objects.filter(patient=self.request.user)
-        
-        # Calculate statistics
-        context['total_bookings'] = user_bookings.count()
-        context['completed_bookings'] = user_bookings.filter(payment_status='paid').count()
-        context['pending_bookings'] = user_bookings.filter(payment_status='pending').count()
-        
-        # Calculate total spent
-        total_spent = sum(booking.payment_amount for booking in user_bookings.filter(payment_status='paid'))
-        context['total_spent'] = total_spent
-        
-        return context
-
-class PaymentInitiateView(TemplateView):
-    """
-    Initiate Razorpay payment
-    """
-    template_name = 'bookings/payment_initiate.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        booking_id = self.request.session.get('booking_id')
-        if booking_id:
-            try:
-                booking = Booking.objects.get(booking_id=booking_id)
-                context['booking'] = booking
-                
-                # Get payment settings from database
-                payment_settings = PaymentSettings.get_settings()
-                
-                # Initialize Razorpay client
-                if payment_settings.razorpay_key_id and payment_settings.razorpay_key_secret:
-                    client = razorpay.Client(
-                        auth=(payment_settings.razorpay_key_id, payment_settings.razorpay_key_secret)
-                    )
-                    
-                    # Create Razorpay order
-                    order_data = {
-                        'amount': int(booking.payment_amount * 100),  # Amount in paise
-                        'currency': payment_settings.currency,
-                        'receipt': str(booking.booking_id),
-                        'notes': {
-                            'booking_id': str(booking.booking_id),
-                            'patient_name': booking.patient_name,
-                            'service': booking.service.name
-                        }
-                    }
-                    
-                    order = client.order.create(data=order_data)
-                    context['razorpay_order_id'] = order['id']
-                    context['razorpay_key'] = payment_settings.razorpay_key_id
-                    context['payment_settings'] = payment_settings
-                
-            except Booking.DoesNotExist:
-                messages.error(self.request, 'Booking not found.')
-        
         return context
 
 class PaymentCallbackView(TemplateView):
@@ -445,64 +343,6 @@ class PaymentFailedView(TemplateView):
     Payment failed page
     """
     template_name = 'bookings/payment_failed.html'
-
-class BookingConfirmView(DetailView):
-    """
-    Booking confirmation page
-    """
-    model = Booking
-    template_name = 'bookings/booking_confirm.html'
-    context_object_name = 'booking'
-    slug_field = 'booking_id'
-    slug_url_kwarg = 'booking_id'
-
-class BookingCancelView(DetailView):
-    """
-    Cancel booking
-    """
-    model = Booking
-    template_name = 'bookings/booking_cancel.html'
-    context_object_name = 'booking'
-    slug_field = 'booking_id'
-    slug_url_kwarg = 'booking_id'
-    
-    def post(self, request, *args, **kwargs):
-        booking = self.get_object()
-        
-        if booking.can_be_cancelled:
-            booking.status = 'cancelled'
-            booking.save()
-            messages.success(request, 'Booking cancelled successfully.')
-        else:
-            messages.error(request, 'This booking cannot be cancelled.')
-        
-        return redirect('my_bookings')
-
-class PrescriptionUploadView(LoginRequiredMixin, CreateView):
-    """
-    Upload prescription for a booking
-    """
-    model = PrescriptionUpload
-    form_class = PrescriptionUploadForm
-    template_name = 'bookings/prescription_upload.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        booking_id = self.kwargs.get('booking_id')
-        context['booking'] = get_object_or_404(Booking, booking_id=booking_id)
-        return context
-    
-    def form_valid(self, form):
-        booking_id = self.kwargs.get('booking_id')
-        booking = get_object_or_404(Booking, booking_id=booking_id)
-        
-        form.instance.booking = booking
-        form.instance.patient = self.request.user
-        
-        response = super().form_valid(form)
-        messages.success(self.request, 'Prescription uploaded successfully.')
-        
-        return redirect('booking_detail', booking_id=booking_id)
 
 # AJAX Views
 class AvailableTimesView(TemplateView):
@@ -570,8 +410,7 @@ class ServiceDetailsView(TemplateView):
                 return JsonResponse({
                     'price': float(service.price),
                     'duration': service.duration_minutes,
-                    'description': service.description,
-                    'requires_prescription': service.requires_prescription
+                    'description': service.description
                 })
             except Service.DoesNotExist:
                 pass
@@ -607,32 +446,4 @@ class BookingSuccessView(TemplateView):
         return context
 
 
-class UserBookingsView(LoginRequiredMixin, ListView):
-    """
-    User's booking history and management
-    """
-    model = Booking
-    template_name = 'bookings/user_bookings.html'
-    context_object_name = 'bookings'
-    paginate_by = 10
-    
-    def get_queryset(self):
-        return Booking.objects.filter(
-            patient=self.request.user
-        ).select_related('service').order_by('-created_at')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        # Add summary statistics
-        user_bookings = self.get_queryset()
-        context['total_bookings'] = user_bookings.count()
-        context['upcoming_bookings'] = user_bookings.filter(
-            status__in=['pending', 'confirmed'],
-            appointment_date__gte=timezone.now().date()
-        ).count()
-        context['completed_bookings'] = user_bookings.filter(
-            status='completed'
-        ).count()
-        
-        return context
+

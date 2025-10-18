@@ -1,10 +1,7 @@
 from django import forms
-from django.contrib.auth import get_user_model
 from .models import Booking, PrescriptionUpload, Service
 from django.utils import timezone
 from datetime import datetime, timedelta
-
-User = get_user_model()
 
 class BookingForm(forms.ModelForm):
     """
@@ -52,17 +49,7 @@ class BookingForm(forms.ModelForm):
         }
     
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        
-        # Populate fields from user profile if available
-        if user and user.is_authenticated:
-            self.fields['patient_name'].initial = user.get_full_name()
-            if hasattr(user, 'phone_number'):
-                self.fields['patient_phone'].initial = user.phone_number
-            if hasattr(user, 'age'):
-                self.fields['patient_age'].initial = user.age
-            self.fields['patient_email'].initial = user.email
         
         # Set service choices
         self.fields['service'].queryset = Service.objects.filter(is_active=True)

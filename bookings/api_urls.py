@@ -14,4 +14,7 @@ urlpatterns = [
     path('time-slots/', api_views.AvailableTimesAPIView.as_view(), name='time_slots'),
     path('create-payment-order/', api_views.CreatePaymentOrderAPIView.as_view(), name='create_payment_order'),
     path('verify-payment/', api_views.VerifyPaymentAPIView.as_view(), name='verify_payment'),
+    
+    # Razorpay webhook
+    path('razorpay-webhook/', api_views.RazorpayWebhookView.as_view(), name='razorpay_webhook'),
 ] + router.urls
