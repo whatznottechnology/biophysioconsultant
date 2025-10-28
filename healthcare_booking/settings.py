@@ -204,16 +204,16 @@ CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
 
 # Razorpay Configuration
 # Test credentials for development
-RAZORPAY_KEY_ID = env('RAZORPAY_KEY_ID', default='rzp_test_1DP5mmOlF5G5ag')
-RAZORPAY_KEY_SECRET = env('RAZORPAY_KEY_SECRET', default='dIGQzxjIl2ZS6SdWrBr9IOX5')
+RAZORPAY_KEY_ID = env('RAZORPAY_KEY_ID', default='rzp_live_RVQXMrxCQbvLxB')
+RAZORPAY_KEY_SECRET = env('RAZORPAY_KEY_SECRET', default='aWlMkID7p0GccmP4ADyTLjYX')
 
 # Email Configuration (Hardcoded for production)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'biophysioconsultant@gmail.com'
-EMAIL_HOST_PASSWORD = 'your_app_password_here'  # Replace with actual Gmail app password
+EMAIL_HOST_USER = 'pratapbag33@gmail.com'
+EMAIL_HOST_PASSWORD = 'klnt subo hlqr yhry'  # Replace with actual Gmail app password
 DEFAULT_FROM_EMAIL = 'biophysioconsultant@gmail.com'
 
 # Login/Logout URLs

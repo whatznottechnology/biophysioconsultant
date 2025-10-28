@@ -131,35 +131,35 @@
                 <div class="space-y-4">
                     <!-- Phone -->
                     {% if site_settings.contact_phone %}
-                    <div class="flex items-start">
-                        <i class="fas fa-phone text-primary mr-3 mt-1"></i>
+                    <a href="tel:{{ site_settings.contact_phone }}" class="flex items-start hover:opacity-80 transition-opacity group">
+                        <i class="fas fa-phone text-primary mr-3 mt-1 group-hover:scale-110 transition-transform"></i>
                         <div>
-                            <p class="text-gray-300">{{ site_settings.contact_phone }}</p>
+                            <p class="text-gray-300 group-hover:text-primary transition-colors">{{ site_settings.contact_phone }}</p>
                             <p class="text-xs text-gray-400">Call for appointments</p>
                         </div>
-                    </div>
+                    </a>
                     {% endif %}
                     
                     <!-- WhatsApp -->
                     {% if site_settings.contact_phone %}
-                    <div class="flex items-start">
-                        <i class="fab fa-whatsapp text-primary mr-3 mt-1"></i>
+                    <a href="https://wa.me/91{{ site_settings.contact_phone }}" target="_blank" class="flex items-start hover:opacity-80 transition-opacity group">
+                        <i class="fab fa-whatsapp text-primary mr-3 mt-1 group-hover:scale-110 transition-transform"></i>
                         <div>
-                            <p class="text-gray-300">{{ site_settings.contact_phone }}</p>
+                            <p class="text-gray-300 group-hover:text-primary transition-colors">{{ site_settings.contact_phone }}</p>
                             <p class="text-xs text-gray-400">WhatsApp booking</p>
                         </div>
-                    </div>
+                    </a>
                     {% endif %}
                     
                     <!-- Email -->
                     {% if site_settings.contact_email %}
-                    <div class="flex items-start">
-                        <i class="fas fa-envelope text-primary mr-3 mt-1"></i>
+                    <a href="mailto:{{ site_settings.contact_email }}" class="flex items-start hover:opacity-80 transition-opacity group">
+                        <i class="fas fa-envelope text-primary mr-3 mt-1 group-hover:scale-110 transition-transform"></i>
                         <div>
-                            <p class="text-gray-300">{{ site_settings.contact_email }}</p>
+                            <p class="text-gray-300 group-hover:text-primary transition-colors">{{ site_settings.contact_email }}</p>
                             <p class="text-xs text-gray-400">Email us anytime</p>
                         </div>
-                    </div>
+                    </a>
                     {% endif %}
                     
                     <!-- Address -->
@@ -280,19 +280,13 @@
     </div>
 </div>
 
-<!-- Floating Action Buttons (Mobile) -->
+<!-- Floating WhatsApp Button -->
 {% if site_settings.contact_phone %}
-<div class="fixed bottom-20 right-4 flex flex-col space-y-2 lg:hidden z-30">
+<div class="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-30">
     <!-- WhatsApp -->
-    <a href="https://wa.me/{{ site_settings.contact_phone|slice:'1:' }}" target="_blank" 
-       class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110">
-        <i class="fab fa-whatsapp text-white text-xl"></i>
-    </a>
-    
-    <!-- Call -->
-    <a href="tel:{{ site_settings.contact_phone }}" 
-       class="w-12 h-12 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110">
-        <i class="fas fa-phone text-white"></i>
+    <a href="https://wa.me/91{{ site_settings.contact_phone }}" target="_blank" 
+       class="w-14 h-14 lg:w-16 lg:h-16 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 animate-pulse hover:animate-none">
+        <i class="fab fa-whatsapp text-white text-2xl lg:text-3xl"></i>
     </a>
 </div>
 {% endif %}

@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<section class="bg-gradient-to-r from-green-600 to-blue-600 text-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">Welcome back, {{ user.get_display_name }}!</h1>
+                <p class="text-green-100">Manage your healthcare appointments and profile</p>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <a href="{% url 'book_appointment' %}" 
+                   class="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>
+                    Book New Appointment
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dashboard Stats -->
+<section class="py-8 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <!-- Total Bookings -->
+            <div class="bg-white rounded-lg p-6 shadow-md">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-calendar-alt text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Total Bookings</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ total_bookings|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Appointments -->
+            <div class="bg-white rounded-lg p-6 shadow-md">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-clock text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Upcoming</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ upcoming_bookings|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed Appointments -->
+            <div class="bg-white rounded-lg p-6 shadow-md">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-check-circle text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Completed</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ completed_bookings|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Member Since -->
+            <div class="bg-white rounded-lg p-6 shadow-md">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-user-plus text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Member Since</p>
+                        <p class="text-lg font-bold text-gray-900">{{ user.date_joined|date:"M Y" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Dashboard Content -->
+<section class="py-8 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Recent Bookings -->
+            <div class="lg:col-span-2">
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <h2 class="text-xl font-semibold text-gray-900">Recent Appointments</h2>
+                        <a href="{% url 'my_bookings' %}" 
+                           class="text-green-600 hover:text-green-700 text-sm font-medium">
+                            View All
+                        </a>
+                    </div>
+                    
+                    {% if recent_bookings %}
+                    <div class="divide-y divide-gray-200">
+                        {% for booking in recent_bookings %}
+                        <div class="px-6 py-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-stethoscope"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-sm font-medium text-gray-900">{{ booking.service.name }}</h3>
+                                            <p class="text-sm text-gray-600">
+                                                {{ booking.appointment_date|date:"M d, Y" }} at {{ booking.appointment_time|time:"g:i A" }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="px-3 py-1 text-xs font-medium rounded-full
+                                        {% if booking.status == 'confirmed' %}bg-green-100 text-green-800
+                                        {% elif booking.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                        {% elif booking.status == 'cancelled' %}bg-red-100 text-red-800
+                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                        {{ booking.get_status_display }}
+                                    </span>
+                                    {% if booking.status == 'pending' %}
+                                    <a href="{% url 'booking_detail' booking.booking_id %}" 
+                                       class="text-green-600 hover:text-green-700">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="px-6 py-8 text-center">
+                        <i class="fas fa-calendar-plus text-4xl text-gray-300 mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No appointments yet</h3>
+                        <p class="text-gray-600 mb-4">Book your first appointment to get started</p>
+                        <a href="{% url 'book_appointment' %}" 
+                           class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                            Book Appointment
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Actions & Profile -->
+            <div class="space-y-6">
+                
+                <!-- Quick Actions -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-xl font-semibold text-gray-900">Quick Actions</h2>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <a href="{% url 'book_appointment' %}" 
+                           class="flex items-center p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                            <div class="w-10 h-10 bg-green-600 text-white rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Book Appointment</h3>
+                                <p class="text-sm text-gray-600">Schedule a new consultation</p>
+                            </div>
+                        </a>
+
+                        <a href="{% url 'accounts:profile' %}" 
+                           class="flex items-center p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                            <div class="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">View Profile</h3>
+                                <p class="text-sm text-gray-600">Manage your information</p>
+                            </div>
+                        </a>
+
+                        <a href="{% url 'my_bookings' %}" 
+                           class="flex items-center p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                            <div class="w-10 h-10 bg-purple-600 text-white rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Booking History</h3>
+                                <p class="text-sm text-gray-600">View all appointments</p>
+                            </div>
+                        </a>
+
+                        <a href="{% url 'contact:contact' %}" 
+                           class="flex items-center p-3 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">
+                            <div class="w-10 h-10 bg-orange-600 text-white rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Contact Support</h3>
+                                <p class="text-sm text-gray-600">Get help and support</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Profile Summary -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-xl font-semibold text-gray-900">Profile Summary</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="{{ user.get_display_name }}" 
+                                 class="w-16 h-16 rounded-full object-cover mr-4">
+                            {% else %}
+                            <div class="w-16 h-16 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-user text-xl"></i>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <h3 class="font-medium text-gray-900">{{ user.get_display_name }}</h3>
+                                <p class="text-sm text-gray-600">{{ user.email }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2 text-sm">
+                            {% if user.phone %}
+                            <div class="flex items-center">
+                                <i class="fas fa-phone text-gray-400 w-4 mr-2"></i>
+                                <span class="text-gray-600">{{ user.phone }}</span>
+                            </div>
+                            {% endif %}
+                            
+                            {% if user.date_of_birth %}
+                            <div class="flex items-center">
+                                <i class="fas fa-birthday-cake text-gray-400 w-4 mr-2"></i>
+                                <span class="text-gray-600">{{ user.date_of_birth|date:"M d, Y" }}</span>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar text-gray-400 w-4 mr-2"></i>
+                                <span class="text-gray-600">Member since {{ user.date_joined|date:"M Y" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <a href="{% url 'accounts:profile_edit' %}" 
+                               class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg text-center hover:bg-gray-200 transition-colors block">
+                                Edit Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Health Tips Section -->
+<section class="py-8 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">Health Tips</h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-900 mb-2">Stay Hydrated</h3>
+                        <p class="text-sm text-gray-600">Drink at least 8 glasses of water daily for optimal health</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-900 mb-2">Exercise Regularly</h3>
+                        <p class="text-sm text-gray-600">30 minutes of daily activity can improve your overall wellness</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-bed"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-900 mb-2">Get Quality Sleep</h3>
+                        <p class="text-sm text-gray-600">7-9 hours of sleep is essential for physical and mental health</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

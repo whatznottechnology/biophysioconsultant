@@ -1,318 +1,161 @@
-# Healthcare Booking System# Healthcare Booking System for Pratap Bag
+# Healthcare Booking System for Pratap Bag
 
+A comprehensive Django-based healthcare booking system with PWA support for Mr. Pratap Bag's physiotherapy and alternative medicine practice.
 
-
-A Django-based healthcare booking system that allows guests to book medical appointments online with integrated payment processing and email notifications.A comprehensive Django-based healthcare booking system with PWA support for Mr. Pratap Bag's physiotherapy and alternative medicine practice.
-
-
-
-## Features![Django](https://img.shields.io/badge/Django-5.2.7-green)
-
+![Django](https://img.shields.io/badge/Django-5.2.7-green)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
-- **Guest Booking**: No user registration required - patients can book appointments directly![License](https://img.shields.io/badge/License-MIT-yellow)
+## 🏥 About Practitioner
 
-- **Service Selection**: Choose from available medical services
-
-- **Payment Integration**: Secure payments via Razorpay## 🏥 About Practitioner
-
-- **Email Notifications**: Automatic booking confirmations sent to patients
-
-- **Prescription Upload**: Patients can upload prescription files during booking**Dr. Pratap Bag**
-
-- **PWA Support**: Progressive Web App features for mobile experience- **Qualifications:** M. D. (Acu.), M. B. S., DMT, DPT, D. Mass. T., D. Cup. T, FWT, PET.
-
-- **REST API**: API endpoints for payment processing and booking management- **Registration:** S/53515/201
-
-- **Responsive Design**: Mobile-friendly interface- **Specialties:** Acupressure, Magnet Therapy, Massage, Cupping, Physiotherapy, Biochemic Consultancy
-
+**Dr. Pratap Bag**
+- **Qualifications:** M. D. (Acu.), M. B. S., DMT, DPT, D. Mass. T., D. Cup. T, FWT, PET.
+- **Registration:** S/53515/201
+- **Specialties:** Acupressure, Magnet Therapy, Massage, Cupping, Physiotherapy, Biochemic Consultancy
 - **Consultation Fee:** ₹200.00
-
-## Installation
 
 ## ✨ Features
 
-### Prerequisites
-
-- Python 3.8+### 🎯 Core Features
-
-- pip- **Mobile-first responsive design** - Optimized for all devices
-
-- Git- **Online appointment booking** with payment integration
-
+### 🎯 Core Features
+- **Mobile-first responsive design** - Optimized for all devices
+- **Online appointment booking** with payment integration
 - **Simplified user registration** (email + password only)
-
-### Setup Steps- **Guest booking support** for cash payments
-
+- **Guest booking support** for cash payments
 - **User dashboard** for booking management
-
-1. **Clone the repository** (if applicable) or navigate to the project directory- **Admin panel** for appointment management
-
+- **Admin panel** for appointment management
 - **PWA capabilities** (offline support, installable)
 
-2. **Create a virtual environment**:
+### 💳 Payment Integration
+- **Razorpay payment gateway** for online payments
+- **Cash payment option** for walk-in appointments
+- **Secure payment processing** with callback handling
 
-   ```bash### 💳 Payment Integration
-
-   python -m venv venv- **Razorpay payment gateway** for online payments
-
-   venv\Scripts\activate  # On Windows- **Cash payment option** for walk-in appointments
-
-   ```- **Secure payment processing** with callback handling
-
-
-
-3. **Install dependencies**:### 📱 PWA Features
-
-   ```bash- **Offline support** through service worker
-
-   pip install -r requirements.txt- **Add to home screen** capability
-
-   ```- **Fast loading** with cached resources
-
+### 📱 PWA Features
+- **Offline support** through service worker
+- **Add to home screen** capability
+- **Fast loading** with cached resources
 - **Mobile app-like experience**
 
-4. **Configure the database**:
-
-   ```bash### 🏥 Healthcare Specific
-
-   python manage.py migrate- **Service management** with pricing
-
-   ```- **Patient information collection**
-
+### 🏥 Healthcare Specific
+- **Service management** with pricing
+- **Patient information collection**
 - **Symptoms tracking**
+- **Prescription/report upload** system
+- **Appointment status tracking**
 
-5. **Load initial data** (optional):- **Prescription/report upload** system
+## 🚀 Quick Start
 
-   ```bash- **Appointment status tracking**
-
-   python manage.py loaddata fixtures/*.json
-
-   ```## 🚀 Quick Start
-
-
-
-6. **Configure email settings** in `healthcare_booking/settings.py`:### Prerequisites
-
-   - Update EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD- Python 3.8 or higher
-
-   - Or use environment variables for sensitive data- pip (Python package manager)
-
+### Prerequisites
+- Python 3.8 or higher
+- pip (Python package manager)
 - Git (for cloning the repository)
 
-7. **Configure Razorpay** in `healthcare_booking/settings.py`:
-
-   - Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET### Easy Installation (Windows)
-
-   - Use test keys for development
+### Easy Installation (Windows)
 
 1. **Clone the repository:**
-
-## Usage   ```bash
-
+   ```bash
    git clone https://github.com/whatznottechnology/physiotherapist_booking.git
-
-### Starting the Server   cd physiotherapist_booking
-
+   cd physiotherapist_booking
    ```
 
-Run the development server:
-
-```bash2. **Run the installer:**
-
-python manage.py runserver   ```bash
-
-```   install.bat
-
+2. **Run the installer:**
+   ```bash
+   install.bat
    ```
-
-The application will be available at `http://127.0.0.1:8000/`   This will:
-
+   This will:
    - Create virtual environment
-
-### Booking Process   - Install all dependencies
-
+   - Install all dependencies
    - Run database migrations
+   - Create admin user
+   - Set up the system
 
-1. Patients visit the website and select a service   - Create admin user
-
-2. Fill in patient details (name, email, phone, etc.)   - Set up the system
-
-3. Upload prescription files if required
-
-4. Proceed to payment via Razorpay3. **Start the server:**
-
-5. Receive booking confirmation email   ```bash
-
+3. **Start the server:**
+   ```bash
    start_server.bat
+   ```
 
-### Admin Panel   ```
+4. **Access the application:**
+   - Website: http://127.0.0.1:8000
+   - Admin Panel: http://127.0.0.1:8000/admin
 
+### Manual Installation
 
-
-Access the Django admin at `http://127.0.0.1:8000/admin/` to:4. **Access the application:**
-
-- Manage services   - Website: http://127.0.0.1:8000
-
-- View bookings   - Admin Panel: http://127.0.0.1:8000/admin
-
-- Configure site settings
-
-- Manage uploaded files### Manual Installation
-
-
-
-## API Endpoints1. **Clone and setup:**
-
+1. **Clone and setup:**
    ```bash
+   git clone https://github.com/whatznottechnology/physiotherapist_booking.git
+   cd physiotherapist_booking
+   ```
 
-- `POST /api/bookings/create/` - Create a new booking   git clone https://github.com/whatznottechnology/physiotherapist_booking.git
-
-- `POST /api/payments/verify/` - Verify payment completion   cd physiotherapist_booking
-
-- `GET /api/services/` - List available services   ```
-
-
-
-## Deployment2. **Create virtual environment:**
-
+2. **Create virtual environment:**
    ```bash
-
-### Heroku Deployment   python -m venv .venv
-
+   python -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
 
-1. Install Heroku CLI   ```
-
-2. Login to Heroku: `heroku login`
-
-3. Create app: `heroku create your-app-name`3. **Install dependencies:**
-
-4. Set environment variables:   ```bash
-
-   ```bash   pip install -r requirements.txt
-
-   heroku config:set SECRET_KEY=your-secret-key   ```
-
-   heroku config:set RAZORPAY_KEY_ID=your-razorpay-key-id
-
-   heroku config:set RAZORPAY_KEY_SECRET=your-razorpay-key-secret4. **Environment setup:**
-
-   heroku config:set EMAIL_HOST_USER=your-email@domain.com   ```bash
-
-   heroku config:set EMAIL_HOST_PASSWORD=your-email-password   cp .env.example .env
-
-   ```   # Edit .env file with your settings
-
-5. Deploy: `git push heroku main`   ```
-
-
-
-### Local Deployment5. **Database setup:**
-
+3. **Install dependencies:**
    ```bash
+   pip install -r requirements.txt
+   ```
 
-Use the provided `start_server.bat` for Windows or configure your preferred WSGI server.   python manage.py migrate
+4. **Environment setup:**
+   ```bash
+   cp .env.example .env
+   # Edit .env file with your settings
+   ```
 
+5. **Database setup:**
+   ```bash
+   python manage.py migrate
    python manage.py createsuperuser
+   ```
 
-## Configuration   ```
+6. **Run the server:**
+   ```bash
+   python manage.py runserver
+   ```
 
+## 🛠 Tech Stack
 
-
-### Email Settings6. **Run the server:**
-
-Update these in `healthcare_booking/settings.py`:   ```bash
-
-```python   python manage.py runserver
-
-EMAIL_HOST = 'smtp.gmail.com'   ```
-
-EMAIL_PORT = 587
-
-EMAIL_USE_TLS = True## 🛠 Tech Stack
-
-EMAIL_HOST_USER = 'your-email@gmail.com'
-
-EMAIL_HOST_PASSWORD = 'your-app-password'### Backend
-
-```- **Django 5.2.7** - Web framework
-
+### Backend
+- **Django 5.2.7** - Web framework
 - **Django REST Framework** - API development
+- **SQLite** - Database (configurable to PostgreSQL/MySQL)
+- **Python 3.8+** - Programming language
 
-### Payment Settings- **SQLite** - Database (configurable to PostgreSQL/MySQL)
-
-```python- **Python 3.8+** - Programming language
-
-RAZORPAY_KEY_ID = 'your-razorpay-key-id'
-
-RAZORPAY_KEY_SECRET = 'your-razorpay-key-secret'### Frontend
-
-```- **Django Templates** - Server-side rendering
-
+### Frontend
+- **Django Templates** - Server-side rendering
 - **TailwindCSS** - CSS framework
-
-## File Structure- **Alpine.js** - JavaScript framework
-
+- **Alpine.js** - JavaScript framework
 - **Font Awesome** - Icons
 
-```
+### Payment & Services
+- **Razorpay** - Payment gateway
+- **PWA** - Progressive Web App features
+- **Service Worker** - Offline capabilities
 
-healthcare_booking/### Payment & Services
+## 📋 Configuration
 
-├── bookings/          # Main booking app- **Razorpay** - Payment gateway
+### Environment Variables
+Create a `.env` file in the root directory:
 
-├── blog/             # Blog functionality- **PWA** - Progressive Web App features
-
-├── career/           # Career/job listings- **Service Worker** - Offline capabilities
-
-├── contact/          # Contact forms
-
-├── site_settings/    # Site configuration## 📋 Configuration
-
-├── static/           # Static files
-
-├── templates/        # HTML templates### Environment Variables
-
-├── media/            # Uploaded filesCreate a `.env` file in the root directory:
-
-└── fixtures/         # Initial data
-
-``````env
-
+```env
 # Django Settings
-
-## Technologies UsedSECRET_KEY=your-secret-key-here
-
+SECRET_KEY=your-secret-key-here
 DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
 
-- **Backend**: Django 4.x, Django REST FrameworkALLOWED_HOSTS=localhost,127.0.0.1
+# Database (Optional - defaults to SQLite)
+DATABASE_URL=sqlite:///db.sqlite3
 
-- **Database**: SQLite (development), PostgreSQL (production)
-
-- **Payments**: Razorpay# Database (Optional - defaults to SQLite)
-
-- **Email**: SMTPDATABASE_URL=sqlite:///db.sqlite3
-
-- **Frontend**: HTML, CSS, JavaScript, Bootstrap
-
-- **PWA**: Service Worker, Web App Manifest# Razorpay Settings
-
+# Razorpay Settings
 RAZORPAY_KEY_ID=your-razorpay-key-id
+RAZORPAY_KEY_SECRET=your-razorpay-key-secret
 
-## LicenseRAZORPAY_KEY_SECRET=your-razorpay-key-secret
-
-
-
-This project is licensed under the MIT License - see the LICENSE file for details.# Email Settings (Optional)
-
+# Email Settings (Optional)
 EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-
-## SupportEMAIL_HOST=smtp.gmail.com
-
+EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
-
-For issues or questions, please check the existing code or create an issue in the repository.EMAIL_USE_TLS=True
+EMAIL_USE_TLS=True
 EMAIL_HOST_USER=your-email@gmail.com
 EMAIL_HOST_PASSWORD=your-app-password
 ```
