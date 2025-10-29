@@ -42,8 +42,13 @@ SECRET_KEY = env('SECRET_KEY', default='django-insecure-%^+*oe7ptbpyebsa=v@z!)#y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG', default=True)
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
-
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+    '192.168.0.104',  # Your local IP address
+    '*'
+]
 
 # Application definition
 

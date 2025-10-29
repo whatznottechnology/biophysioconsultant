@@ -114,19 +114,64 @@
     <script src="{% static 'js/app.js' %}"></script>
     {% block extra_js %}{% endblock %}
     
+    <!-- PWA Installation UI -->
+    <div id="pwa-install-container" class="hidden fixed bottom-20 left-4 z-50 lg:left-auto lg:right-4 bg-white p-4 rounded-lg shadow-lg border border-gray-200">
+        <div class="flex items-center gap-3">
+            <img src="{% static 'images/loogoo.png' %}" alt="Install App" class="w-12 h-12 rounded">
+            <div>
+                <p class="font-semibold">Install Bio-Physio App</p>
+                <p class="text-sm text-gray-600">Install for quick access</p>
+            </div>
+            <button id="pwa-install-button" class="ml-4 bg-primary text-white px-4 py-2 rounded">
+                Install
+            </button>
+            <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="ml-2 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
     <!-- PWA Service Worker -->
     <script>
+        let deferredPrompt;
+        const pwaContainer = document.getElementById('pwa-install-container');
+        const pwaInstallButton = document.getElementById('pwa-install-button');
+
         // Register service worker
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                .then(function(registration) {
+            window.addEventListener('load', async function() {
+                try {
+                    const registration = await navigator.serviceWorker.register('{% url "sw" %}');
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                }, function(err) {
+                } catch (err) {
                     console.log('ServiceWorker registration failed: ', err);
-                });
+                }
             });
         }
+
+        // Handle PWA installation
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            pwaContainer.classList.remove('hidden');
+
+            pwaInstallButton.addEventListener('click', async () => {
+                pwaContainer.classList.add('hidden');
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response to install prompt: ${outcome}`);
+                    deferredPrompt = null;
+                }
+            });
+        });
+
+        // Hide install prompt if already installed
+        window.addEventListener('appinstalled', () => {
+            pwaContainer.classList.add('hidden');
+            deferredPrompt = null;
+            console.log('PWA was installed');
+        });
     </script>
     
     <!-- Google Analytics -->

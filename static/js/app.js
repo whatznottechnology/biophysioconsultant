@@ -111,21 +111,106 @@ document.addEventListener('DOMContentLoaded', function() {
     // PWA Install prompt
     let deferredPrompt;
     
+    // Check if app is already installed
+    function checkIfInstalled() {
+        // Check if app was previously installed
+        if (localStorage.getItem('pwaInstalled') === 'true') {
+            return true;
+        }
+        
+        // Check if running in standalone mode (installed)
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            localStorage.setItem('pwaInstalled', 'true');
+            return true;
+        }
+        
+        return false;
+    }
+    
+    // Hide install buttons if already installed
+    if (checkIfInstalled()) {
+        const installButton = document.getElementById('pwa-install-button');
+        if (installButton) {
+            installButton.classList.add('hidden');
+        }
+        
+        const mobileInstallButton = document.getElementById('mobile-pwa-install-button');
+        if (mobileInstallButton) {
+            mobileInstallButton.classList.add('hidden');
+        }
+    }
+    
+    // Show install button when install prompt is available
     window.addEventListener('beforeinstallprompt', function(e) {
         e.preventDefault();
         deferredPrompt = e;
         
-        // Show install button if desired
+        // Don't show if already installed
+        if (checkIfInstalled()) {
+            return;
+        }
+        
+        // Show desktop install button
         const installButton = document.getElementById('pwa-install-button');
         if (installButton) {
             installButton.classList.remove('hidden');
+            installButton.classList.add('flex');
+            
             installButton.addEventListener('click', function() {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then(function(choiceResult) {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        localStorage.setItem('pwaInstalled', 'true');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
                     deferredPrompt = null;
+                    installButton.classList.remove('flex');
                     installButton.classList.add('hidden');
                 });
             });
+        }
+        
+        // Show mobile install button
+        const mobileInstallButton = document.getElementById('mobile-pwa-install-button');
+        if (mobileInstallButton) {
+            mobileInstallButton.classList.remove('hidden');
+            mobileInstallButton.classList.add('flex');
+            
+            mobileInstallButton.addEventListener('click', function() {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function(choiceResult) {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        localStorage.setItem('pwaInstalled', 'true');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    deferredPrompt = null;
+                    mobileInstallButton.classList.remove('flex');
+                    mobileInstallButton.classList.add('hidden');
+                });
+            });
+        }
+    });
+    
+    // Handle app installed event
+    window.addEventListener('appinstalled', function(e) {
+        localStorage.setItem('pwaInstalled', 'true');
+        
+        // Hide desktop button
+        const installButton = document.getElementById('pwa-install-button');
+        if (installButton) {
+            installButton.classList.remove('flex');
+            installButton.classList.add('hidden');
+        }
+        
+        // Hide mobile button
+        const mobileInstallButton = document.getElementById('mobile-pwa-install-button');
+        if (mobileInstallButton) {
+            mobileInstallButton.classList.remove('flex');
+            mobileInstallButton.classList.add('hidden');
         }
     });
     

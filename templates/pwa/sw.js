@@ -1,53 +1,28 @@
-// Service Worker for Bio-Physio Consultant PWA
-const CACHE_NAME = 'healthcare-booking-v1';
+// Service Worker
+const CACHE_NAME = 'biophysio-consultant-v3';
 const urlsToCache = [
   '/',
   '/static/js/app.js',
-  '/static/images/loogoo.png',
-  '/offline/',
+  '/static/images/pratap.jpeg',
+  '/manifest.json',
+  '/static/images/icon-192x192.png',
+  '/static/images/icon-512x512.png',
+  '/static/images/loogoo.png'
 ];
 
-// Install Service Worker
-self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
-});
+// Get base URL for handling both localhost and IP address
+const getBaseUrl = () => {
+  return self.location.origin;
+};
 
-// Fetch events
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        // Return cached version or fetch from network
-        if (response) {
-          return response;
-        }
-        
-        return fetch(event.request).catch(function() {
-          // Return offline page for navigation requests
-          if (event.request.mode === 'navigate') {
-            return caches.match('/offline/');
-          }
-        });
-      }
-    )
-  );
-});
-
-// Activate Service Worker
-self.addEventListener('activate', function(event) {
+// Clear old caches
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(function(cacheNames) {
+    caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map(function(cacheName) {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
+        cacheNames.map(cache => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
           }
         })
       );
@@ -55,45 +30,41 @@ self.addEventListener('activate', function(event) {
   );
 });
 
-// Handle push notifications (if implemented in future)
-self.addEventListener('push', function(event) {
-  if (event.data) {
-    const data = event.data.json();
-    const options = {
-      body: data.body,
-      icon: '/static/images/loogoo.png',
-      badge: '/static/images/loogoo.png',
-      vibrate: [200, 100, 200],
-      data: {
-        url: data.url || '/'
-      },
-      actions: [
-        {
-          action: 'view',
-          title: 'View',
-          icon: '/static/images/loogoo.png'
-        },
-        {
-          action: 'close',
-          title: 'Close',
-          icon: '/static/images/loogoo.png'
-        }
-      ]
-    };
-
-    event.waitUntil(
-      self.registration.showNotification(data.title, options)
-    );
-  }
+self.addEventListener('install', event => {
+  // Force waiting service worker to become active
+  self.skipWaiting();
+  
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        return cache.addAll(urlsToCache);
+      })
+  );
 });
 
-// Handle notification clicks
-self.addEventListener('notificationclick', function(event) {
-  event.notification.close();
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request)
+          .then(response => {
+            // Check if we received a valid response
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
 
-  if (event.action === 'view') {
-    event.waitUntil(
-      clients.openWindow(event.notification.data.url)
-    );
-  }
+            const responseToCache = response.clone();
+
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+
+            return response;
+          });
+      })
+  );
 });

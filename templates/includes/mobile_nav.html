@@ -53,7 +53,40 @@
                 <i class="fas fa-video text-2xl text-primary mb-2"></i>
                 <span class="text-sm">Videos</span>
             </a>
+
+            <!-- PWA Install Button (Hidden by default) -->
+            <button id="mobile-pwa-install" class="flex flex-col items-center p-4 rounded-lg hover:bg-gray-50 hidden">
+                <i class="fas fa-download text-2xl text-primary mb-2"></i>
+                <span class="text-sm">Install App</span>
+            </button>
         </div>
+
+        <script>
+            // Handle PWA installation in mobile menu
+            const mobilePwaButton = document.getElementById('mobile-pwa-install');
+            if (mobilePwaButton) {
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    mobilePwaButton.classList.remove('hidden');
+                    
+                    mobilePwaButton.addEventListener('click', async () => {
+                        if (deferredPrompt) {
+                            toggleMobileMore(); // Close the menu
+                            deferredPrompt.prompt();
+                            const { outcome } = await deferredPrompt.userChoice;
+                            console.log(`User response to install prompt: ${outcome}`);
+                            deferredPrompt = null;
+                            mobilePwaButton.classList.add('hidden');
+                        }
+                    });
+                });
+
+                window.addEventListener('appinstalled', () => {
+                    mobilePwaButton.classList.add('hidden');
+                });
+            }
+        </script>
         
         <!-- Close Button -->
         <button onclick="toggleMobileMore()" class="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium">
